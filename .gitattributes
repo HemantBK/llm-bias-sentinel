@@ -1,0 +1,7 @@
+# Tell GitHub these are generated files, not source code
+reports/** linguist-generated
+*.html linguist-generated
+*.json linguist-generated
+*.csv linguist-generated
+notebooks/** linguist-generated
+monitoring/grafana/** linguist-generated
