@@ -10,16 +10,12 @@ All generation is local via Ollama — zero API costs.
 """
 
 import random
-from typing import List, Dict, Optional
 
 from loguru import logger
 
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 from src.red_team.attack_taxonomy import (
     ALL_ATTACKS,
-    ATTACK_CATEGORIES,
-    DEMOGRAPHIC_FILL,
-    AttackTemplate,
     instantiate_template,
 )
 
@@ -27,7 +23,7 @@ from src.red_team.attack_taxonomy import (
 class AdversarialGenerator:
     """Generates adversarial prompts using multiple strategies."""
 
-    def __init__(self, generator_model_config: Optional[dict] = None):
+    def __init__(self, generator_model_config: dict | None = None):
         """Initialize with an optional LLM for AI-assisted generation.
 
         Args:
@@ -48,11 +44,11 @@ class AdversarialGenerator:
 
     def generate_from_taxonomy(
         self,
-        categories: Optional[List[str]] = None,
-        severity: Optional[str] = None,
-        target_bias: Optional[str] = None,
+        categories: list[str] | None = None,
+        severity: str | None = None,
+        target_bias: str | None = None,
         max_prompts: int = 100,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Generate prompts from the attack taxonomy.
 
         Returns list of dicts with prompt, attack_id, category, severity.
@@ -113,9 +109,9 @@ class AdversarialGenerator:
 
     def generate_mutations(
         self,
-        base_prompts: List[str],
-        strategies: Optional[List[str]] = None,
-    ) -> List[Dict]:
+        base_prompts: list[str],
+        strategies: list[str] | None = None,
+    ) -> list[dict]:
         """Apply mutation strategies to base prompts.
 
         Args:
@@ -187,7 +183,7 @@ Do not include explanations or commentary."""
         self,
         bias_category: str = "race",
         n_prompts: int = 10,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Use a local LLM to generate novel adversarial prompts.
 
         The generator LLM creates new attack prompts that aren't
@@ -227,9 +223,9 @@ Do not include explanations or commentary."""
         include_taxonomy: bool = True,
         include_mutations: bool = True,
         include_llm: bool = True,
-        bias_categories: Optional[List[str]] = None,
+        bias_categories: list[str] | None = None,
         max_total: int = 200,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Generate adversarial prompts using all strategies.
 
         Returns a combined, deduplicated list.
@@ -272,7 +268,7 @@ Do not include explanations or commentary."""
         logger.info(f"Total adversarial prompts generated: {len(unique)}")
         return unique
 
-    def _parse_numbered_list(self, text: str) -> List[str]:
+    def _parse_numbered_list(self, text: str) -> list[str]:
         """Parse a numbered list from LLM output."""
         lines = text.strip().split("\n")
         prompts = []

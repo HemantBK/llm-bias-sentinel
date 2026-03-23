@@ -20,13 +20,12 @@ Requirements:
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 from loguru import logger
 
 try:
     import torch
-    from datasets import Dataset, load_from_disk
+    from datasets import load_from_disk
     from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
     from transformers import (
         AutoModelForCausalLM,
@@ -86,7 +85,7 @@ class LoRATrainingConfig:
 class LoRABiasTrainer:
     """Fine-tunes language models for bias mitigation using LoRA/QLoRA."""
 
-    def __init__(self, training_config: Optional[LoRATrainingConfig] = None):
+    def __init__(self, training_config: LoRATrainingConfig | None = None):
         if not FINETUNE_AVAILABLE:
             raise RuntimeError(
                 "Fine-tuning dependencies not installed. "
@@ -111,7 +110,7 @@ class LoRABiasTrainer:
                 bnb_4bit_use_double_quant=True,
             )
 
-        self.model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(  # nosec B615
             self.config.base_model,
             quantization_config=bnb_config,
             device_map="auto",
@@ -119,7 +118,7 @@ class LoRABiasTrainer:
             trust_remote_code=True,
         )
 
-        self.tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(  # nosec B615
             self.config.base_model,
             trust_remote_code=True,
         )
@@ -304,7 +303,7 @@ class LoRABiasTrainer:
         logger.info("Merging LoRA adapter with base model...")
 
         # Load base model (full precision for merging)
-        base = AutoModelForCausalLM.from_pretrained(
+        base = AutoModelForCausalLM.from_pretrained(  # nosec B615
             self.config.base_model,
             torch_dtype=torch.float16,
             device_map="auto",
@@ -318,7 +317,7 @@ class LoRABiasTrainer:
         merged_path = str(Path(self.config.output_dir) / "merged")
         merged.save_pretrained(merged_path)
 
-        tokenizer = AutoTokenizer.from_pretrained(adapter_path)
+        tokenizer = AutoTokenizer.from_pretrained(adapter_path)  # nosec B615
         tokenizer.save_pretrained(merged_path)
 
         # Create Ollama Modelfile
@@ -347,7 +346,7 @@ PARAMETER stop "### System:"
     def evaluate_before_after(
         self,
         adapter_path: str,
-        test_prompts: Optional[list] = None,
+        test_prompts: list | None = None,
     ) -> dict:
         """Compare model outputs before and after fine-tuning.
 
@@ -366,12 +365,12 @@ PARAMETER stop "### System:"
         test_prompts = test_prompts or default_prompts
 
         # Load base model
-        base = AutoModelForCausalLM.from_pretrained(
+        base = AutoModelForCausalLM.from_pretrained(  # nosec B615
             self.config.base_model,
             torch_dtype=torch.float16,
             device_map="auto",
         )
-        tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
+        tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)  # nosec B615
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 

@@ -11,15 +11,14 @@ from pathlib import Path
 import pandas as pd
 from loguru import logger
 
-from src.config import config
 from src.benchmarks.bbq_evaluator import BBQEvaluator
-from src.benchmarks.stereoset_evaluator import StereoSetEvaluator
-from src.benchmarks.crows_pairs_evaluator import CrowSPairsEvaluator
 from src.benchmarks.bold_evaluator import BOLDEvaluator
-from src.benchmarks.toxicity_evaluator import ToxicityEvaluator
-from src.benchmarks.sentiment_disparity import SentimentDisparityEvaluator
+from src.benchmarks.crows_pairs_evaluator import CrowSPairsEvaluator
 from src.benchmarks.deepeval_bias_runner import DeepEvalBiasRunner
-
+from src.benchmarks.sentiment_disparity import SentimentDisparityEvaluator
+from src.benchmarks.stereoset_evaluator import StereoSetEvaluator
+from src.benchmarks.toxicity_evaluator import ToxicityEvaluator
+from src.config import config
 
 # Map benchmark names to evaluator classes
 BENCHMARK_MAP = {

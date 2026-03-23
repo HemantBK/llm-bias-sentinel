@@ -2,10 +2,9 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
-
 
 # ─── Enums ───────────────────────────────────────
 
@@ -55,19 +54,19 @@ class ModelConfig(BaseModel):
 
 
 class RunBenchmarkRequest(BaseModel):
-    models: List[ModelConfig] = Field(
+    models: list[ModelConfig] = Field(
         default_factory=lambda: [
             ModelConfig(name="llama3-8b", model_id="llama3")
         ]
     )
-    benchmarks: List[BenchmarkName] = Field(
+    benchmarks: list[BenchmarkName] = Field(
         default_factory=lambda: [BenchmarkName.BBQ, BenchmarkName.STEREOSET]
     )
     max_samples: int = Field(default=100, ge=10, le=5000)
 
 
 class RunRedTeamRequest(BaseModel):
-    models: List[ModelConfig] = Field(
+    models: list[ModelConfig] = Field(
         default_factory=lambda: [
             ModelConfig(name="llama3-8b", model_id="llama3")
         ]
@@ -95,7 +94,7 @@ class BiasCheckRequest(BaseModel):
 
 class CounterfactualRequest(BaseModel):
     prompt: str = Field(..., min_length=1)
-    categories: List[str] = Field(
+    categories: list[str] = Field(
         default_factory=lambda: ["gender", "race", "religion"]
     )
 
@@ -106,7 +105,7 @@ class HealthResponse(BaseModel):
     status: str = "healthy"
     version: str = "1.0.0"
     ollama_connected: bool = False
-    models_available: List[str] = Field(default_factory=list)
+    models_available: list[str] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
@@ -119,26 +118,26 @@ class JobResponse(BaseModel):
 class BenchmarkResultSummary(BaseModel):
     model: str
     benchmark: str
-    key_metrics: Dict[str, Any] = Field(default_factory=dict)
-    passed: Optional[bool] = None
+    key_metrics: dict[str, Any] = Field(default_factory=dict)
+    passed: bool | None = None
 
 
 class BenchmarkReport(BaseModel):
     job_id: str
     status: JobStatus
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    results: List[Dict[str, Any]] = Field(default_factory=list)
-    summary: List[BenchmarkResultSummary] = Field(default_factory=list)
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    results: list[dict[str, Any]] = Field(default_factory=list)
+    summary: list[BenchmarkResultSummary] = Field(default_factory=list)
 
 
 class RedTeamReport(BaseModel):
     job_id: str
     status: JobStatus
-    models_tested: List[str] = Field(default_factory=list)
+    models_tested: list[str] = Field(default_factory=list)
     total_attacks: int = 0
-    summary: Dict[str, Any] = Field(default_factory=dict)
-    risk_levels: Dict[str, RiskLevel] = Field(default_factory=dict)
+    summary: dict[str, Any] = Field(default_factory=dict)
+    risk_levels: dict[str, RiskLevel] = Field(default_factory=dict)
 
 
 class GuardedResponse(BaseModel):
@@ -146,20 +145,20 @@ class GuardedResponse(BaseModel):
     input_flagged: bool = False
     output_flagged: bool = False
     mitigated: bool = False
-    original_response: Optional[str] = None
+    original_response: str | None = None
 
 
 class BiasCheckResponse(BaseModel):
     text: str
-    input_check: Optional[Dict[str, Any]] = None
-    output_check: Optional[Dict[str, Any]] = None
+    input_check: dict[str, Any] | None = None
+    output_check: dict[str, Any] | None = None
     overall_flagged: bool = False
-    bias_type: Optional[str] = None
+    bias_type: str | None = None
 
 
 class CounterfactualResponse(BaseModel):
     original: str
-    counterfactuals: List[Dict[str, str]] = Field(default_factory=list)
+    counterfactuals: list[dict[str, str]] = Field(default_factory=list)
     total_generated: int = 0
 
 

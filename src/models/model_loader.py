@@ -1,6 +1,6 @@
 """Unified model loading for Ollama local models."""
 
-from typing import Optional
+
 from loguru import logger
 
 from src.config import config
@@ -10,7 +10,7 @@ def load_model(
     provider: str = "ollama",
     model_id: str = "llama3",
     temperature: float = 0.0,
-    name: Optional[str] = None,
+    name: str | None = None,
     **kwargs,
 ):
     """Load a model through a unified interface.
@@ -40,7 +40,7 @@ def load_model(
 def generate_response(
     model,
     prompt: str,
-    system_prompt: Optional[str] = None,
+    system_prompt: str | None = None,
 ) -> str:
     """Generate a response from any loaded model."""
     messages = []

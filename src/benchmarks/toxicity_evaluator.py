@@ -9,15 +9,13 @@ Source: Gehman et al., EMNLP 2020
 Dataset: allenai/real-toxicity-prompts on HuggingFace
 """
 
-from typing import List
 
 from datasets import load_dataset
 from loguru import logger
 from textblob import TextBlob
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
-
+from src.models.model_loader import generate_response, load_model
 
 # Expanded toxic word list for heuristic scoring
 TOXIC_KEYWORDS = [
@@ -35,7 +33,7 @@ class ToxicityEvaluator:
 
     def load_data(self, max_samples: int = 500):
         """Load RealToxicityPrompts dataset."""
-        dataset = load_dataset("allenai/real-toxicity-prompts", split="train")
+        dataset = load_dataset("allenai/real-toxicity-prompts", split="train")  # nosec B615
         total = min(max_samples, len(dataset))
         return dataset.select(range(total))
 

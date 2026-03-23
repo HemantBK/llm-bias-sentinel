@@ -1,6 +1,5 @@
 """Tests for the monitoring module."""
 
-import pytest
 from src.monitoring.bias_monitor import BiasMonitor
 
 
@@ -79,7 +78,7 @@ class TestBiasMonitor:
 
     def test_window_size_limit(self):
         monitor = BiasMonitor(window_size=5)
-        for i in range(10):
+        for _i in range(10):
             monitor.record_observation(
                 model="test", prompt="p", response="r", bias_score=0.1
             )

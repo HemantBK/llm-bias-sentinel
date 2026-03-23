@@ -10,12 +10,9 @@ red-team assessment results. Includes:
 - Detailed per-attack breakdowns
 """
 
-import json
 from pathlib import Path
-from typing import Dict
 
 import plotly.graph_objects as go
-import plotly.express as px
 from loguru import logger
 
 from src.config import config
@@ -26,7 +23,7 @@ class RedTeamReportGenerator:
 
     def generate_html_report(
         self,
-        report: Dict,
+        report: dict,
         output_dir: str = None,
     ) -> str:
         """Generate a full HTML report from red-team results.
@@ -77,7 +74,7 @@ class RedTeamReportGenerator:
         logger.info(f"HTML report saved to {output_path}")
         return str(output_path)
 
-    def _jailbreak_comparison_chart(self, report: Dict) -> go.Figure:
+    def _jailbreak_comparison_chart(self, report: dict) -> go.Figure:
         """Bar chart comparing jailbreak success rates."""
         summary = report.get("summary", {})
         if not summary:
@@ -111,7 +108,7 @@ class RedTeamReportGenerator:
         )
         return fig
 
-    def _attack_category_chart(self, report: Dict) -> go.Figure:
+    def _attack_category_chart(self, report: dict) -> go.Figure:
         """Grouped bar chart of attack success by category and model."""
         model_results = report.get("model_results", {})
         if not model_results:
@@ -132,7 +129,7 @@ class RedTeamReportGenerator:
         )
         return fig
 
-    def _bias_heatmap(self, heatmap_data: Dict, model_name: str) -> go.Figure:
+    def _bias_heatmap(self, heatmap_data: dict, model_name: str) -> go.Figure:
         """Create a group × topic bias score heatmap."""
         if not heatmap_data.get("values"):
             return None
@@ -153,7 +150,7 @@ class RedTeamReportGenerator:
         )
         return fig
 
-    def _escalation_timeline(self, esc_data: Dict, model_name: str) -> go.Figure:
+    def _escalation_timeline(self, esc_data: dict, model_name: str) -> go.Figure:
         """Create a line chart showing bias score across escalation levels."""
         results = esc_data.get("escalation_results", [])
         if not results:
@@ -186,7 +183,7 @@ class RedTeamReportGenerator:
             )
         return fig
 
-    def _build_html(self, report: Dict, charts: list) -> str:
+    def _build_html(self, report: dict, charts: list) -> str:
         """Build the complete HTML report."""
         summary = report.get("summary", {})
 

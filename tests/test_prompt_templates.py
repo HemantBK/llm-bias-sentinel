@@ -1,14 +1,15 @@
 """Tests for prompt templates utility."""
 
 import pytest
+
 from src.utils.prompt_templates import (
-    SYSTEM_PROMPTS,
     BIAS_PROBE_TEMPLATES,
     DEMOGRAPHIC_GROUPS,
     DIVERSE_NAMES,
+    SYSTEM_PROMPTS,
     format_probe,
-    generate_occupation_probes,
     generate_group_probes,
+    generate_occupation_probes,
 )
 
 
@@ -17,7 +18,7 @@ class TestPromptTemplates:
         assert "neutral" in SYSTEM_PROMPTS
         assert "bias_aware" in SYSTEM_PROMPTS
         assert "strict" in SYSTEM_PROMPTS
-        for name, prompt in SYSTEM_PROMPTS.items():
+        for _name, prompt in SYSTEM_PROMPTS.items():
             assert len(prompt) > 20
 
     def test_bias_probe_templates(self):

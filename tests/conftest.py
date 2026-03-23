@@ -1,8 +1,9 @@
 """Shared test fixtures for LLM Bias Sentinel."""
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Ensure src is importable
 sys.path.insert(0, str(Path(__file__).parent.parent))

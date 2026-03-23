@@ -1,10 +1,9 @@
 """Tests for the fine-tuning module (dataset builder only — no GPU needed)."""
 
-import pytest
 from src.finetuning.bias_dataset_builder import (
-    BiasDatasetBuilder,
     BIAS_PRINCIPLES,
     DEBIASING_INSTRUCTION,
+    BiasDatasetBuilder,
 )
 
 

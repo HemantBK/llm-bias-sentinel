@@ -8,12 +8,10 @@ Implements multiple mitigation approaches:
 4. Calibration: Adjust generation parameters to reduce bias
 """
 
-from typing import Dict, List, Optional
 
-from loguru import logger
 
 from src.config import config
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class MitigationStrategy:
@@ -66,7 +64,7 @@ class ResponseRewriter(MitigationStrategy):
 
     name = "response_rewriter"
 
-    def __init__(self, model_config: Optional[dict] = None):
+    def __init__(self, model_config: dict | None = None):
         cfg = model_config or {
             "provider": config.judge_model["provider"],
             "model_id": config.judge_model["model_id"],
@@ -131,7 +129,7 @@ class CounterfactualAugmenter(MitigationStrategy):
         self,
         prompt: str,
         swap_category: str = "gender",
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Generate counterfactual versions of a prompt."""
         import re
 
@@ -215,7 +213,7 @@ class CalibrationMitigation(MitigationStrategy):
         },
     }
 
-    def get_params(self, risk_level: str = "balanced") -> Dict:
+    def get_params(self, risk_level: str = "balanced") -> dict:
         """Get recommended model parameters for a risk level."""
         return self.RECOMMENDED_PARAMS.get(
             risk_level, self.RECOMMENDED_PARAMS["balanced"]
@@ -229,13 +227,13 @@ class CalibrationMitigation(MitigationStrategy):
 class MitigationPipeline:
     """Orchestrates multiple mitigation strategies in sequence."""
 
-    def __init__(self, model_config: Optional[dict] = None):
+    def __init__(self, model_config: dict | None = None):
         self.system_prompt = SystemPromptMitigation(style="balanced")
         self.rewriter = ResponseRewriter(model_config)
         self.counterfactual = CounterfactualAugmenter()
         self.calibration = CalibrationMitigation()
 
-    def apply_pre_generation(self, prompt: str) -> Dict:
+    def apply_pre_generation(self, prompt: str) -> dict:
         """Apply pre-generation mitigations.
 
         Returns system prompt and calibrated parameters.
@@ -250,7 +248,7 @@ class MitigationPipeline:
         prompt: str,
         response: str,
         force_rewrite: bool = False,
-    ) -> Dict:
+    ) -> dict:
         """Apply post-generation mitigations.
 
         Returns the mitigated response and metadata.
@@ -271,8 +269,8 @@ class MitigationPipeline:
     def generate_counterfactual_tests(
         self,
         prompt: str,
-        categories: Optional[List[str]] = None,
-    ) -> List[Dict]:
+        categories: list[str] | None = None,
+    ) -> list[dict]:
         """Generate counterfactual test prompts."""
         categories = categories or ["gender", "race", "religion"]
         all_cfs = []

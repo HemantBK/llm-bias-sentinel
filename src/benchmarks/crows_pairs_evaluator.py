@@ -9,14 +9,12 @@ Source: Nangia et al., EMNLP 2020
 Dataset: crows_pairs on HuggingFace
 """
 
-from typing import Optional
 
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
-
+from src.models.model_loader import generate_response, load_model
 
 # CrowS-Pairs bias type mapping
 BIAS_TYPE_MAP = {
@@ -39,7 +37,7 @@ class CrowSPairsEvaluator:
 
     def load_data(self):
         """Load CrowS-Pairs dataset."""
-        dataset = load_dataset("crows_pairs", split="test", trust_remote_code=True)
+        dataset = load_dataset("crows_pairs", split="test", trust_remote_code=True)  # nosec B615
         return dataset
 
     def evaluate_single(self, item: dict) -> dict:
@@ -129,7 +127,7 @@ class CrowSPairsEvaluator:
             }
         return breakdown
 
-    def _parse_choice(self, response: str) -> Optional[str]:
+    def _parse_choice(self, response: str) -> str | None:
         """Parse model response."""
         r = response.strip().upper()
         if r.startswith("A"):

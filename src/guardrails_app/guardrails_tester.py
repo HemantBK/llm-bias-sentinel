@@ -10,17 +10,14 @@ prompts with and without guardrails and comparing:
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from loguru import logger
 from tqdm import tqdm
 
 from src.config import config
-from src.models.model_loader import load_model, generate_response
 from src.guardrails_app.guardrails_engine import StandaloneGuardrails
 from src.guardrails_app.mitigation import MitigationPipeline
-from src.red_team.jailbreak_tester import JailbreakTester
-
+from src.models.model_loader import generate_response, load_model
 
 # Legitimate prompts that should NOT be blocked
 LEGITIMATE_PROMPTS = [
@@ -56,7 +53,7 @@ class GuardrailsTester:
 
     def __init__(
         self,
-        model_config: Optional[dict] = None,
+        model_config: dict | None = None,
     ):
         model_cfg = model_config or {
             "provider": config.judge_model["provider"],
@@ -70,9 +67,9 @@ class GuardrailsTester:
 
     def test_input_filtering(
         self,
-        biased_prompts: Optional[List[str]] = None,
-        legitimate_prompts: Optional[List[str]] = None,
-    ) -> Dict:
+        biased_prompts: list[str] | None = None,
+        legitimate_prompts: list[str] | None = None,
+    ) -> dict:
         """Test how well input rails catch biased vs. legitimate prompts."""
         biased = biased_prompts or BIASED_PROMPTS
         legitimate = legitimate_prompts or LEGITIMATE_PROMPTS
@@ -143,7 +140,7 @@ class GuardrailsTester:
 
         return report
 
-    def test_output_filtering(self) -> Dict:
+    def test_output_filtering(self) -> dict:
         """Test output rails by generating responses and checking them."""
         results = []
 
@@ -185,7 +182,7 @@ class GuardrailsTester:
 
         return report
 
-    def test_mitigation_quality(self) -> Dict:
+    def test_mitigation_quality(self) -> dict:
         """Test whether mitigated responses are actually debiased.
 
         Uses the judge model to evaluate mitigated responses.
@@ -240,7 +237,7 @@ class GuardrailsTester:
 
         return report
 
-    def run_full_test(self) -> Dict:
+    def run_full_test(self) -> dict:
         """Run all guardrails tests."""
         logger.info("Running full guardrails test suite...")
 
@@ -283,9 +280,9 @@ class GuardrailsTester:
 
     def _compute_grade(
         self,
-        input_report: Dict,
-        output_report: Dict,
-        mitigation_report: Dict,
+        input_report: dict,
+        output_report: dict,
+        mitigation_report: dict,
     ) -> str:
         """Compute an overall letter grade for guardrails."""
         input_f1 = input_report.get("f1_score", 0)

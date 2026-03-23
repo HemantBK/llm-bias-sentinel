@@ -1,8 +1,6 @@
 """Model metadata registry for tracking evaluated models."""
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional
-from loguru import logger
+from dataclasses import dataclass
 
 from src.config import config
 from src.models.model_loader import load_model
@@ -14,8 +12,8 @@ class ModelInfo:
     name: str
     provider: str
     model_id: str
-    parameters: Optional[str] = None
-    description: Optional[str] = None
+    parameters: str | None = None
+    description: str | None = None
 
 
 # Known model metadata
@@ -41,7 +39,7 @@ class ModelRegistry:
     """Registry for managing models under evaluation."""
 
     def __init__(self):
-        self._loaded_models: Dict = {}
+        self._loaded_models: dict = {}
 
     def get_model(self, name: str):
         """Get or load a model by registry name."""
@@ -60,7 +58,7 @@ class ModelRegistry:
 
         raise KeyError(f"Model '{name}' not found in registry. Available: {list(MODEL_CATALOG.keys())}")
 
-    def get_all_configured_models(self) -> Dict:
+    def get_all_configured_models(self) -> dict:
         """Load and return all models from config."""
         models = {}
         for model_config in config.models:
@@ -68,10 +66,10 @@ class ModelRegistry:
             models[name] = self.get_model(name)
         return models
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List all available model names."""
         return list(MODEL_CATALOG.keys())
 
-    def get_info(self, name: str) -> Optional[ModelInfo]:
+    def get_info(self, name: str) -> ModelInfo | None:
         """Get model metadata."""
         return MODEL_CATALOG.get(name)

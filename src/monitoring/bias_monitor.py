@@ -8,16 +8,11 @@ data drift detection.
 Designed to run alongside the API in production.
 """
 
-import time
 from collections import deque
 from datetime import datetime
-from typing import Dict, List, Optional
 
 from loguru import logger
-from prometheus_client import Counter, Histogram, Gauge, Summary
-
-from src.config import config
-
+from prometheus_client import Counter, Gauge, Histogram, Summary
 
 # ─── Prometheus Metrics ──────────────────────────
 
@@ -71,7 +66,7 @@ class BiasMonitor:
         """
         self.window_size = window_size
         self._observations: deque = deque(maxlen=window_size)
-        self._alerts: List[Dict] = []
+        self._alerts: list[dict] = []
 
     def record_observation(
         self,
@@ -81,8 +76,8 @@ class BiasMonitor:
         bias_score: float = 0.0,
         toxicity_score: float = 0.0,
         sentiment: float = 0.0,
-        bias_category: Optional[str] = None,
-        demographic_group: Optional[str] = None,
+        bias_category: str | None = None,
+        demographic_group: str | None = None,
         flagged: bool = False,
         mitigated: bool = False,
         latency: float = 0.0,
@@ -135,7 +130,7 @@ class BiasMonitor:
         # Check for alerts
         self._check_alerts(observation)
 
-    def _check_alerts(self, observation: Dict):
+    def _check_alerts(self, observation: dict):
         """Check if observation triggers any alerts."""
         # Alert: high bias score
         if observation["bias_score"] > 0.7:
@@ -179,7 +174,7 @@ class BiasMonitor:
                         observation=observation,
                     )
 
-    def _add_alert(self, level: str, message: str, observation: Dict):
+    def _add_alert(self, level: str, message: str, observation: dict):
         """Add an alert."""
         alert = {
             "level": level,
@@ -193,7 +188,7 @@ class BiasMonitor:
         else:
             logger.warning(message)
 
-    def get_rolling_stats(self, model: Optional[str] = None) -> Dict:
+    def get_rolling_stats(self, model: str | None = None) -> dict:
         """Get rolling statistics from the observation window."""
         obs = list(self._observations)
         if model:
@@ -232,16 +227,16 @@ class BiasMonitor:
 
     def get_alerts(
         self,
-        level: Optional[str] = None,
+        level: str | None = None,
         limit: int = 50,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get recent alerts."""
         alerts = self._alerts
         if level:
             alerts = [a for a in alerts if a["level"] == level]
         return alerts[-limit:]
 
-    def get_demographic_breakdown(self) -> Dict:
+    def get_demographic_breakdown(self) -> dict:
         """Get bias metrics broken down by demographic group."""
         obs = list(self._observations)
         groups = set(o["demographic_group"] for o in obs if o["demographic_group"])

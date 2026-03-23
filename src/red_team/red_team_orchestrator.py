@@ -14,14 +14,13 @@ All using local Ollama models — zero API costs.
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from loguru import logger
 
 from src.config import config
 from src.red_team.adversarial_generator import AdversarialGenerator
-from src.red_team.jailbreak_tester import JailbreakTester
 from src.red_team.bias_elicitation import BiasElicitationEngine
+from src.red_team.jailbreak_tester import JailbreakTester
 from src.red_team.report_generator import RedTeamReportGenerator
 
 
@@ -30,9 +29,9 @@ class RedTeamOrchestrator:
 
     def __init__(
         self,
-        target_models: Optional[List[dict]] = None,
-        generator_model_config: Optional[dict] = None,
-        judge_model_config: Optional[dict] = None,
+        target_models: list[dict] | None = None,
+        generator_model_config: dict | None = None,
+        judge_model_config: dict | None = None,
     ):
         """
         Args:
@@ -67,7 +66,7 @@ class RedTeamOrchestrator:
         include_escalation: bool = True,
         max_attack_prompts: int = 100,
         grid_max_probes: int = 200,
-    ) -> Dict:
+    ) -> dict:
         """Run the complete red-team assessment.
 
         Returns a comprehensive report covering all models and attack types.
@@ -160,7 +159,7 @@ class RedTeamOrchestrator:
     def run_quick_scan(
         self,
         max_prompts: int = 30,
-    ) -> Dict:
+    ) -> dict:
         """Run a quick red-team scan (subset of attacks, no grid probe).
 
         Good for CI/CD pipelines or quick checks.
@@ -174,7 +173,7 @@ class RedTeamOrchestrator:
             max_attack_prompts=max_prompts,
         )
 
-    def _build_summary(self, model_results: Dict) -> Dict:
+    def _build_summary(self, model_results: dict) -> dict:
         """Build an executive summary across all models."""
         summary = {}
         for model_name, report in model_results.items():
@@ -199,7 +198,7 @@ class RedTeamOrchestrator:
 
         return summary
 
-    def _compute_risk_level(self, jb_metrics: Dict, grid_metrics: Dict) -> str:
+    def _compute_risk_level(self, jb_metrics: dict, grid_metrics: dict) -> str:
         """Compute an overall risk level for a model."""
         jb_rate = jb_metrics.get("jailbreak_success_rate", 0)
         grid_rate = grid_metrics.get("overall_bias_rate", 0)
@@ -215,7 +214,7 @@ class RedTeamOrchestrator:
         else:
             return "MINIMAL"
 
-    def _save_report(self, report: Dict):
+    def _save_report(self, report: dict):
         """Save the full report as JSON."""
         reports_dir = Path(config.reports_dir) / "red_team"
         reports_dir.mkdir(parents=True, exist_ok=True)

@@ -19,17 +19,16 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    generate_latest,
     CONTENT_TYPE_LATEST,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
 )
 from starlette.responses import Response
 
@@ -37,20 +36,20 @@ from starlette.responses import Response
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from api.schemas import (
-    HealthResponse,
-    JobResponse,
-    JobStatus,
-    RunBenchmarkRequest,
     BenchmarkReport,
-    RunRedTeamRequest,
-    RedTeamReport,
-    GuardedGenerateRequest,
-    GuardedResponse,
     BiasCheckRequest,
     BiasCheckResponse,
     CounterfactualRequest,
     CounterfactualResponse,
+    GuardedGenerateRequest,
+    GuardedResponse,
+    HealthResponse,
+    JobResponse,
+    JobStatus,
     MetricsResponse,
+    RedTeamReport,
+    RunBenchmarkRequest,
+    RunRedTeamRequest,
 )
 from src.config import config
 
@@ -85,7 +84,7 @@ ACTIVE_JOBS = Gauge(
 
 # ─── In-Memory Job Store ─────────────────────────
 
-jobs: Dict[str, dict] = {}
+jobs: dict[str, dict] = {}
 START_TIME = time.time()
 
 
@@ -344,7 +343,7 @@ async def guarded_generate(request: GuardedGenerateRequest):
             original_response=result.get("original_response"),
         )
     else:
-        from src.models.model_loader import load_model, generate_response
+        from src.models.model_loader import generate_response, load_model
 
         model = load_model(provider="ollama", model_id=request.model_id)
         response = generate_response(model, request.prompt)

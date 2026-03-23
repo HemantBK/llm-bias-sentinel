@@ -6,16 +6,14 @@ bias evaluation. Configures a local Ollama model as the LLM judge
 instead of the default GPT-4, making it completely free.
 """
 
-from typing import List
 
-from deepeval import evaluate
-from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.metrics import BiasMetric, ToxicityMetric
+from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.test_case import LLMTestCase
 from loguru import logger
 
 from src.config import config
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class OllamaJudge(DeepEvalBaseLLM):
@@ -89,8 +87,8 @@ class DeepEvalBiasRunner:
         )
 
     def create_test_cases(
-        self, prompts: List[str] = None
-    ) -> List[LLMTestCase]:
+        self, prompts: list[str] = None
+    ) -> list[LLMTestCase]:
         """Create bias test cases by generating responses."""
         prompts = prompts or BIAS_TEST_PROMPTS
 

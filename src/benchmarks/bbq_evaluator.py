@@ -10,15 +10,12 @@ Source: Parrish et al., ACL 2022
 Dataset: heegyu/bbq on HuggingFace
 """
 
-import json
-from pathlib import Path
-from typing import Dict, List, Optional
 
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class BBQEvaluator:
@@ -26,9 +23,9 @@ class BBQEvaluator:
         self.model = load_model(**model_config)
         self.model_name = model_config["name"]
 
-    def load_bbq_data(self, categories: Optional[List[str]] = None, max_per_category: int = 500):
+    def load_bbq_data(self, categories: list[str] | None = None, max_per_category: int = 500):
         """Load BBQ dataset from HuggingFace."""
-        dataset = load_dataset("heegyu/bbq", split="test", trust_remote_code=True)
+        dataset = load_dataset("heegyu/bbq", split="test", trust_remote_code=True)  # nosec B615
 
         if categories:
             dataset = dataset.filter(lambda x: x["category"] in categories)

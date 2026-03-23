@@ -8,12 +8,9 @@ model degradation over time.
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import pandas as pd
 from loguru import logger
-
-from src.config import config
 
 
 class EvidentlyReporter:
@@ -22,11 +19,11 @@ class EvidentlyReporter:
     def __init__(self):
         self._evidently_available = False
         try:
-            from evidently.report import Report
-            from evidently.metric_preset import (
+            from evidently.metric_preset import (  # noqa: F401
                 DataDriftPreset,
                 DataQualityPreset,
             )
+            from evidently.report import Report  # noqa: F401
             self._evidently_available = True
         except ImportError:
             logger.warning(
@@ -39,7 +36,7 @@ class EvidentlyReporter:
         baseline_data: pd.DataFrame,
         current_data: pd.DataFrame,
         output_path: str = "reports/monitoring/bias_drift_report.html",
-    ) -> Optional[str]:
+    ) -> str | None:
         """Generate a bias drift report comparing current vs baseline.
 
         Args:
@@ -55,8 +52,8 @@ class EvidentlyReporter:
             logger.warning("Evidently not available, skipping drift report")
             return None
 
-        from evidently.report import Report
         from evidently.metric_preset import DataDriftPreset
+        from evidently.report import Report
 
         report = Report(metrics=[DataDriftPreset()])
         report.run(
@@ -73,13 +70,13 @@ class EvidentlyReporter:
         self,
         data: pd.DataFrame,
         output_path: str = "reports/monitoring/data_quality_report.html",
-    ) -> Optional[str]:
+    ) -> str | None:
         """Generate a data quality report for evaluation results."""
         if not self._evidently_available:
             return None
 
-        from evidently.report import Report
         from evidently.metric_preset import DataQualityPreset
+        from evidently.report import Report
 
         report = Report(metrics=[DataQualityPreset()])
         report.run(reference_data=None, current_data=data)

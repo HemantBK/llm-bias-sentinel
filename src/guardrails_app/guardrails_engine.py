@@ -11,14 +11,13 @@ Usage:
 """
 
 from pathlib import Path
-from typing import Optional, Dict, List
 
 from loguru import logger
 
 from src.config import config
 
 try:
-    from nemoguardrails import RailsConfig, LLMRails
+    from nemoguardrails import LLMRails, RailsConfig
     NEMO_AVAILABLE = True
 except ImportError:
     NEMO_AVAILABLE = False
@@ -33,8 +32,8 @@ class GuardrailsEngine:
 
     def __init__(
         self,
-        config_path: Optional[str] = None,
-        model_id: Optional[str] = None,
+        config_path: str | None = None,
+        model_id: str | None = None,
     ):
         """
         Args:
@@ -70,13 +69,13 @@ class GuardrailsEngine:
 
         # Register custom actions
         from guardrails.actions.bias_actions import (
+            apply_mitigation,
             check_input_bias,
-            check_stereotype_request,
             check_output_bias,
+            check_stereotype_request,
             check_toxicity,
             detect_bias_type,
             mitigate_biased_response,
-            apply_mitigation,
         )
 
         self._rails.register_action(check_input_bias)
@@ -93,8 +92,8 @@ class GuardrailsEngine:
     async def generate_async(
         self,
         prompt: str,
-        context: Optional[Dict] = None,
-    ) -> Dict:
+        context: dict | None = None,
+    ) -> dict:
         """Generate a guarded response (async).
 
         Returns dict with:
@@ -116,7 +115,7 @@ class GuardrailsEngine:
             "guarded": True,
         }
 
-    def generate(self, prompt: str, context: Optional[Dict] = None) -> Dict:
+    def generate(self, prompt: str, context: dict | None = None) -> dict:
         """Generate a guarded response (sync wrapper)."""
         import asyncio
 
@@ -144,8 +143,8 @@ class StandaloneGuardrails:
     Good for environments where NeMo can't be installed.
     """
 
-    def __init__(self, model_config: Optional[dict] = None):
-        from src.models.model_loader import load_model, generate_response
+    def __init__(self, model_config: dict | None = None):
+        from src.models.model_loader import generate_response
 
         self._model_config = model_config or {
             "provider": config.judge_model["provider"],
@@ -161,11 +160,10 @@ class StandaloneGuardrails:
             self._model = load_model(**self._model_config)
         return self._model
 
-    def check_input(self, text: str) -> Dict:
+    def check_input(self, text: str) -> dict:
         """Check input for bias indicators."""
         from guardrails.actions.bias_actions import (
             STEREOTYPE_KEYWORDS,
-            BIAS_INDICATORS,
         )
 
         text_lower = text.lower()
@@ -191,7 +189,7 @@ class StandaloneGuardrails:
             "reason": "llm_detection" if response.startswith("yes") else None,
         }
 
-    def check_output(self, text: str) -> Dict:
+    def check_output(self, text: str) -> dict:
         """Check output for bias."""
         from guardrails.actions.bias_actions import TOXIC_KEYWORDS
 
@@ -228,7 +226,7 @@ class StandaloneGuardrails:
         )
         return self._generate(self.model, prompt)
 
-    def guarded_generate(self, prompt: str) -> Dict:
+    def guarded_generate(self, prompt: str) -> dict:
         """Full guarded generation pipeline."""
         # Step 1: Check input
         input_check = self.check_input(prompt)

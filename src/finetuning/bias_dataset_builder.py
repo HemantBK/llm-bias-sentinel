@@ -13,17 +13,14 @@ All data generation uses local Ollama models — zero API cost.
 import json
 import random
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
-import pandas as pd
-from datasets import Dataset, DatasetDict
+from datasets import Dataset
 from loguru import logger
 
 from src.config import config
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 from src.red_team.attack_taxonomy import ALL_ATTACKS, instantiate_template
 from src.utils.prompt_templates import DEMOGRAPHIC_GROUPS
-
 
 # Constitutional AI principles for bias
 BIAS_PRINCIPLES = [
@@ -74,7 +71,7 @@ DEBIASING_INSTRUCTION = """You are a helpful AI assistant that provides fair, ba
 class BiasDatasetBuilder:
     """Builds fine-tuning datasets for bias mitigation."""
 
-    def __init__(self, model_config: Optional[dict] = None):
+    def __init__(self, model_config: dict | None = None):
         """
         Args:
             model_config: Ollama model config for generating responses.
@@ -319,7 +316,7 @@ class BiasDatasetBuilder:
 
     # ── Helpers ──────────────────────────────────────────────
 
-    def _generate_biased_prompts(self, n: int) -> List[Dict]:
+    def _generate_biased_prompts(self, n: int) -> list[dict]:
         """Generate diverse biased prompts from the attack taxonomy."""
         all_prompts = []
 

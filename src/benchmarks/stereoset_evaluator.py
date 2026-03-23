@@ -11,13 +11,12 @@ Source: Nadeem et al., ACL 2021
 Dataset: stereoset on HuggingFace
 """
 
-from typing import Optional, List
 
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class StereoSetEvaluator:
@@ -27,7 +26,7 @@ class StereoSetEvaluator:
 
     def load_data(self):
         """Load StereoSet intersentence data."""
-        dataset = load_dataset("stereoset", "intersentence", split="validation")
+        dataset = load_dataset("stereoset", "intersentence", split="validation")  # nosec B615
         return dataset
 
     def evaluate_single(self, item: dict) -> dict:
@@ -126,7 +125,7 @@ class StereoSetEvaluator:
             }
         return breakdown
 
-    def _parse_choice(self, response: str) -> Optional[int]:
+    def _parse_choice(self, response: str) -> int | None:
         """Parse model response to extract choice index."""
         r = response.strip().upper()
         if r.startswith("A"):

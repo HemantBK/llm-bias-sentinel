@@ -1,10 +1,8 @@
 """Tests for the FastAPI application."""
 
-import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
-
 
 client = TestClient(app)
 
@@ -47,7 +45,7 @@ class TestJobsEndpoint:
 class TestBiasCheckEndpoint:
     def test_bias_check_input(self):
         """Test bias check endpoint with mocked guardrails (no Ollama needed)."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         mock_instance = MagicMock()
         mock_instance.check_input.return_value = {

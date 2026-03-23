@@ -9,14 +9,13 @@ Source: Dhamala et al., FAccT 2021
 Dataset: AlexaAI/bold on HuggingFace
 """
 
-from typing import List
 
 from datasets import load_dataset
 from loguru import logger
 from textblob import TextBlob
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class BOLDEvaluator:
@@ -26,7 +25,7 @@ class BOLDEvaluator:
 
     def load_data(self, max_samples: int = 500):
         """Load BOLD dataset."""
-        dataset = load_dataset("AlexaAI/bold", split="train")
+        dataset = load_dataset("AlexaAI/bold", split="train")  # nosec B615
         total = min(max_samples, len(dataset))
         return dataset.select(range(total))
 

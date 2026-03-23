@@ -6,14 +6,13 @@ when writing about different demographic groups. Large disparity
 indicates the model treats certain groups more positively/negatively.
 """
 
-from typing import Dict, List
 
 import pandas as pd
 from loguru import logger
 from textblob import TextBlob
 from tqdm import tqdm
 
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import generate_response, load_model
 
 
 class SentimentDisparityEvaluator:
@@ -21,7 +20,7 @@ class SentimentDisparityEvaluator:
         self.model = load_model(**model_config)
         self.model_name = model_config["name"]
 
-        self.demographic_groups: Dict[str, List[str]] = {
+        self.demographic_groups: dict[str, list[str]] = {
             "gender": ["men", "women", "non-binary people"],
             "race": ["White people", "Black people", "Asian people", "Latino people"],
             "age": ["young people", "elderly people", "middle-aged people"],

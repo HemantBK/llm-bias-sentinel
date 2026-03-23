@@ -16,8 +16,7 @@ Taxonomy categories:
 8. Euphemistic Framing — coded language for stereotypes
 """
 
-from dataclasses import dataclass, field
-from typing import List, Dict
+from dataclasses import dataclass
 
 
 @dataclass
@@ -359,7 +358,7 @@ EUPHEMISTIC_FRAMING = [
 # Master Registry
 # ─────────────────────────────────────────────────
 
-ALL_ATTACKS: List[AttackTemplate] = (
+ALL_ATTACKS: list[AttackTemplate] = (
     DIRECT_ELICITATION
     + ROLE_PLAY_INJECTION
     + HYPOTHETICAL_FRAMING
@@ -412,22 +411,22 @@ DEMOGRAPHIC_FILL = {
 }
 
 
-def get_attacks_by_category(category: str) -> List[AttackTemplate]:
+def get_attacks_by_category(category: str) -> list[AttackTemplate]:
     """Get all attack templates for a given category."""
     return ATTACK_CATEGORIES.get(category, [])
 
 
-def get_attacks_by_severity(severity: str) -> List[AttackTemplate]:
+def get_attacks_by_severity(severity: str) -> list[AttackTemplate]:
     """Get all attack templates of a given severity."""
     return [a for a in ALL_ATTACKS if a.severity == severity]
 
 
-def get_attacks_by_bias_target(target: str) -> List[AttackTemplate]:
+def get_attacks_by_bias_target(target: str) -> list[AttackTemplate]:
     """Get all attacks targeting a specific bias dimension."""
     return [a for a in ALL_ATTACKS if a.target_bias == target]
 
 
-def instantiate_template(attack: AttackTemplate, fill_values: dict = None) -> List[str]:
+def instantiate_template(attack: AttackTemplate, fill_values: dict = None) -> list[str]:
     """Fill an attack template with demographic values.
 
     Returns a list of concrete prompts (one per group value if applicable).

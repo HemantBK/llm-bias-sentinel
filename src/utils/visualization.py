@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 import plotly.express as px
@@ -61,8 +60,8 @@ def create_benchmark_bar_chart(
     results: list,
     benchmark: str,
     metric_key: str,
-    title: Optional[str] = None,
-    output_path: Optional[str] = None,
+    title: str | None = None,
+    output_path: str | None = None,
 ) -> go.Figure:
     """Create a bar chart comparing models on a specific benchmark metric."""
     filtered = [r for r in results if r.get("benchmark") == benchmark and metric_key in r]

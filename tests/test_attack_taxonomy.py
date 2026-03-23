@@ -1,14 +1,13 @@
 """Tests for the red-team attack taxonomy."""
 
-import pytest
 from src.red_team.attack_taxonomy import (
     ALL_ATTACKS,
     ATTACK_CATEGORIES,
     DEMOGRAPHIC_FILL,
     AttackTemplate,
+    get_attacks_by_bias_target,
     get_attacks_by_category,
     get_attacks_by_severity,
-    get_attacks_by_bias_target,
     instantiate_template,
 )
 

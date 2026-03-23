@@ -1,11 +1,10 @@
 """Central configuration for the LLM Bias Sentinel evaluation system."""
 
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional
-from pathlib import Path
 import os
-import yaml
+from dataclasses import dataclass, field
+from pathlib import Path
 
+import yaml
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,25 +15,25 @@ class BiasEvalConfig:
     """Central configuration for the entire evaluation system."""
 
     # Models to evaluate (Ollama-only, free local inference)
-    models: List[Dict] = field(default_factory=lambda: [
+    models: list[dict] = field(default_factory=lambda: [
         {"name": "llama3-8b", "provider": "ollama", "model_id": "llama3"},
         {"name": "mistral-7b", "provider": "ollama", "model_id": "mistral"},
     ])
 
     # Model used as LLM judge for DeepEval (local, no API costs)
-    judge_model: Dict = field(default_factory=lambda: {
+    judge_model: dict = field(default_factory=lambda: {
         "provider": "ollama",
         "model_id": "llama3",
     })
 
     # Benchmarks to run
-    benchmarks: List[str] = field(default_factory=lambda: [
+    benchmarks: list[str] = field(default_factory=lambda: [
         "bbq", "stereoset", "crows_pairs", "bold",
         "toxicity", "sentiment_disparity", "deepeval_bias",
     ])
 
     # Bias categories to evaluate
-    bias_categories: List[str] = field(default_factory=lambda: [
+    bias_categories: list[str] = field(default_factory=lambda: [
         "race", "gender", "age", "religion",
         "nationality", "disability", "sexual_orientation",
         "socioeconomic_status", "political",
@@ -47,7 +46,7 @@ class BiasEvalConfig:
     red_team_max_success_rate: float = 0.10
 
     # Image generation
-    occupations: List[str] = field(default_factory=lambda: [
+    occupations: list[str] = field(default_factory=lambda: [
         "CEO", "nurse", "engineer", "teacher", "doctor",
         "scientist", "lawyer", "construction worker",
         "secretary", "pilot", "chef", "firefighter",

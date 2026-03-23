@@ -1,6 +1,5 @@
 """Tests for RAG bias testing module (no Ollama/ChromaDB needed)."""
 
-import pytest
 
 
 class TestRAGBiasDocuments:

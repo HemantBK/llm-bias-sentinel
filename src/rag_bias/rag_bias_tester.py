@@ -21,11 +21,8 @@ Requirements:
     # Installs: chromadb, sentence-transformers
 """
 
-from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-import pandas as pd
 from loguru import logger
 from tqdm import tqdm
 
@@ -42,9 +39,7 @@ except ImportError:
         "Run: pip install 'llm-bias-sentinel[rag]'"
     )
 
-from src.config import config
-from src.models.model_loader import load_model, generate_response
-
+from src.models.model_loader import generate_response, load_model
 
 # Sample biased and neutral documents for testing
 BIASED_DOCUMENTS = {
@@ -117,7 +112,7 @@ class RAGBiasTester:
     def __init__(
         self,
         model_config: dict,
-        rag_config: Optional[RAGTestConfig] = None,
+        rag_config: RAGTestConfig | None = None,
     ):
         if not RAG_AVAILABLE:
             raise RuntimeError(
@@ -139,7 +134,7 @@ class RAGBiasTester:
 
     # ── Test 1: Context Bias Injection ───────────────────────
 
-    def test_context_bias_injection(self) -> Dict:
+    def test_context_bias_injection(self) -> dict:
         """Test whether biased documents in the vector store
         cause the model to produce biased responses.
 
@@ -219,7 +214,7 @@ class RAGBiasTester:
 
     # ── Test 2: Retrieval Disparity ──────────────────────────
 
-    def test_retrieval_disparity(self) -> Dict:
+    def test_retrieval_disparity(self) -> dict:
         """Test whether the retriever returns different context
         for queries about different demographic groups.
 
@@ -299,7 +294,7 @@ class RAGBiasTester:
 
     # ── Test 3: Counterfactual RAG ───────────────────────────
 
-    def test_counterfactual_rag(self) -> Dict:
+    def test_counterfactual_rag(self) -> dict:
         """Compare RAG responses when swapping demographic terms.
 
         Same query structure, swap "Black" <-> "White", "men" <-> "women".
@@ -372,7 +367,7 @@ class RAGBiasTester:
 
     # ── Full RAG Bias Assessment ─────────────────────────────
 
-    def run_full_assessment(self) -> Dict:
+    def run_full_assessment(self) -> dict:
         """Run all RAG bias tests and produce a unified report."""
         logger.info(f"Running RAG bias assessment for {self.model_name}")
 
@@ -398,7 +393,7 @@ class RAGBiasTester:
 
     # ── Helpers ──────────────────────────────────────────────
 
-    def _build_rag_prompt(self, query: str, context: List[str]) -> str:
+    def _build_rag_prompt(self, query: str, context: list[str]) -> str:
         """Build a RAG prompt with retrieved context."""
         ctx_str = "\n\n".join(f"[Source {i+1}]: {doc}" for i, doc in enumerate(context))
         return (
@@ -409,7 +404,7 @@ class RAGBiasTester:
             f"Answer:"
         )
 
-    def _retrieve_from_docs(self, query: str, docs: List[dict]) -> List[str]:
+    def _retrieve_from_docs(self, query: str, docs: list[dict]) -> list[str]:
         """Simple retrieval by embedding similarity."""
         query_emb = self.embedder.encode(query)
         doc_texts = [d["text"] for d in docs]
@@ -423,13 +418,12 @@ class RAGBiasTester:
         top_indices = np.argsort(similarities)[-self.config.top_k:][::-1]
         return [doc_texts[i] for i in top_indices]
 
-    def _create_collection(self, name: str, docs: List[dict]):
+    def _create_collection(self, name: str, docs: list[dict]):
         """Create a ChromaDB collection with documents."""
         # Delete if exists
-        try:
+        import contextlib
+        with contextlib.suppress(Exception):
             self.chroma_client.delete_collection(name)
-        except Exception:
-            pass
 
         collection = self.chroma_client.create_collection(name)
         texts = [d["text"] for d in docs]
@@ -443,7 +437,7 @@ class RAGBiasTester:
         )
         return collection
 
-    def _retrieve_from_collection(self, collection, query: str) -> List[str]:
+    def _retrieve_from_collection(self, collection, query: str) -> list[str]:
         """Retrieve from a ChromaDB collection."""
         query_emb = self.embedder.encode(query).tolist()
         results = collection.query(
@@ -471,7 +465,7 @@ class RAGBiasTester:
         except (ValueError, IndexError):
             return 0
 
-    def _context_similarity(self, ctx_a: List[str], ctx_b: List[str]) -> float:
+    def _context_similarity(self, ctx_a: list[str], ctx_b: list[str]) -> float:
         """Measure overlap between two context sets."""
         set_a = set(ctx_a)
         set_b = set(ctx_b)

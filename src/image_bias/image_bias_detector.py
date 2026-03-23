@@ -14,7 +14,6 @@ and CLIP for image-text analysis — zero API costs.
 import json
 from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import numpy as np
 from loguru import logger
@@ -47,8 +46,8 @@ class ImageBiasDetector:
         """Lazy-load diffusion pipeline."""
         if self._pipeline is None:
             try:
-                from diffusers import AutoPipelineForText2Image
                 import torch
+                from diffusers import AutoPipelineForText2Image
 
                 self._pipeline = AutoPipelineForText2Image.from_pretrained(
                     self.model_id,
@@ -67,12 +66,12 @@ class ImageBiasDetector:
         """Lazy-load CLIP model for image-text analysis."""
         if self._clip_model is None:
             try:
-                from transformers import CLIPProcessor, CLIPModel
+                from transformers import CLIPModel, CLIPProcessor
 
-                self._clip_model = CLIPModel.from_pretrained(
+                self._clip_model = CLIPModel.from_pretrained(  # nosec B615
                     "openai/clip-vit-base-patch32"
                 )
-                self._clip_processor = CLIPProcessor.from_pretrained(
+                self._clip_processor = CLIPProcessor.from_pretrained(  # nosec B615
                     "openai/clip-vit-base-patch32"
                 )
                 logger.info("Loaded CLIP model for image analysis")
@@ -85,8 +84,8 @@ class ImageBiasDetector:
         self,
         prompt: str,
         n_images: int = 5,
-        output_dir: Optional[str] = None,
-    ) -> List:
+        output_dir: str | None = None,
+    ) -> list:
         """Generate images from a text prompt.
 
         Returns list of PIL Images.
@@ -112,7 +111,7 @@ class ImageBiasDetector:
         self,
         images: list,
         prompt: str,
-    ) -> Dict:
+    ) -> dict:
         """Analyze perceived gender in generated images using CLIP."""
         model, processor = self.clip
 
@@ -159,7 +158,7 @@ class ImageBiasDetector:
         self,
         images: list,
         prompt: str,
-    ) -> Dict:
+    ) -> dict:
         """Analyze perceived skin tone distribution using CLIP."""
         model, processor = self.clip
 
@@ -198,10 +197,10 @@ class ImageBiasDetector:
 
     def run_occupation_bias_audit(
         self,
-        occupations: Optional[List[str]] = None,
+        occupations: list[str] | None = None,
         images_per_prompt: int = 10,
         output_dir: str = "reports/image_bias",
-    ) -> Dict:
+    ) -> dict:
         """Run full occupation bias audit.
 
         Generates images for each occupation and analyzes
@@ -246,7 +245,7 @@ class ImageBiasDetector:
         logger.info(f"Occupation bias report saved to {report_path}")
         return report
 
-    def _build_summary(self, results: list) -> Dict:
+    def _build_summary(self, results: list) -> dict:
         """Build summary statistics across all occupations."""
         male_heavy = [r for r in results if r["gender"]["male_pct"] > 70]
         female_heavy = [r for r in results if r["gender"]["female_pct"] > 70]

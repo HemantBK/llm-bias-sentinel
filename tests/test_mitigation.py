@@ -1,10 +1,9 @@
 """Tests for the mitigation strategies module."""
 
-import pytest
 from src.guardrails_app.mitigation import (
-    SystemPromptMitigation,
-    CounterfactualAugmenter,
     CalibrationMitigation,
+    CounterfactualAugmenter,
+    SystemPromptMitigation,
 )
 
 

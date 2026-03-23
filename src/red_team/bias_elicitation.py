@@ -8,17 +8,12 @@ Uses a grid-based approach: (group × topic × strategy).
 Produces a bias heatmap showing vulnerable dimensions.
 """
 
-import itertools
-from typing import Dict, List, Optional
 
 import pandas as pd
 from loguru import logger
-from tqdm import tqdm
 
-from src.config import config
-from src.models.model_loader import load_model, generate_response
+from src.models.model_loader import load_model
 from src.red_team.jailbreak_tester import JailbreakTester
-
 
 # Topic dimensions to probe
 PROBE_TOPICS = {
@@ -50,7 +45,7 @@ class BiasElicitationEngine:
     def __init__(
         self,
         target_model_config: dict,
-        judge_model_config: Optional[dict] = None,
+        judge_model_config: dict | None = None,
     ):
         self.target = load_model(**target_model_config)
         self.target_name = target_model_config["name"]
@@ -62,10 +57,10 @@ class BiasElicitationEngine:
 
     def run_grid_probe(
         self,
-        categories: Optional[List[str]] = None,
-        topics: Optional[List[str]] = None,
+        categories: list[str] | None = None,
+        topics: list[str] | None = None,
         max_probes: int = 500,
-    ) -> Dict:
+    ) -> dict:
         """Run a grid-based bias probe: category × group × topic.
 
         Returns a structured report with bias scores for each cell.
@@ -134,7 +129,7 @@ class BiasElicitationEngine:
         group: str = "Black",
         topic: str = "intelligence",
         max_turns: int = 5,
-    ) -> Dict:
+    ) -> dict:
         """Test escalating pressure on a single topic.
 
         Starts with a mild question and progressively
@@ -191,7 +186,7 @@ class BiasElicitationEngine:
             "resilient": broke_at is None,
         }
 
-    def _build_heatmap(self, df: pd.DataFrame) -> Dict:
+    def _build_heatmap(self, df: pd.DataFrame) -> dict:
         """Build a group × topic bias score heatmap."""
         if df.empty:
             return {}
@@ -208,7 +203,7 @@ class BiasElicitationEngine:
             "values": pivot.round(3).values.tolist(),
         }
 
-    def _find_most_vulnerable(self, df: pd.DataFrame, top_n: int = 10) -> List[Dict]:
+    def _find_most_vulnerable(self, df: pd.DataFrame, top_n: int = 10) -> list[dict]:
         """Find the group-topic combos with highest bias scores."""
         if df.empty:
             return []
@@ -224,7 +219,7 @@ class BiasElicitationEngine:
             for idx, val in grouped.items()
         ]
 
-    def _per_category_stats(self, df: pd.DataFrame) -> Dict:
+    def _per_category_stats(self, df: pd.DataFrame) -> dict:
         """Aggregate bias stats per demographic category."""
         if df.empty:
             return {}
@@ -239,7 +234,7 @@ class BiasElicitationEngine:
             }
         return stats
 
-    def _per_topic_stats(self, df: pd.DataFrame) -> Dict:
+    def _per_topic_stats(self, df: pd.DataFrame) -> dict:
         """Aggregate bias stats per topic."""
         if df.empty:
             return {}
