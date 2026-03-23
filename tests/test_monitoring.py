@@ -34,20 +34,14 @@ class TestBiasMonitor:
 
     def test_filter_by_model(self):
         monitor = BiasMonitor()
-        monitor.record_observation(
-            model="model-a", prompt="p", response="r", bias_score=0.1
-        )
-        monitor.record_observation(
-            model="model-b", prompt="p", response="r", bias_score=0.9
-        )
+        monitor.record_observation(model="model-a", prompt="p", response="r", bias_score=0.1)
+        monitor.record_observation(model="model-b", prompt="p", response="r", bias_score=0.9)
         stats_a = monitor.get_rolling_stats(model="model-a")
         assert stats_a["bias"]["mean"] == 0.1
 
     def test_high_bias_triggers_alert(self):
         monitor = BiasMonitor()
-        monitor.record_observation(
-            model="test", prompt="p", response="r", bias_score=0.8
-        )
+        monitor.record_observation(model="test", prompt="p", response="r", bias_score=0.8)
         alerts = monitor.get_alerts(level="critical")
         assert len(alerts) >= 1
         assert "High bias" in alerts[0]["message"]
@@ -55,8 +49,11 @@ class TestBiasMonitor:
     def test_high_toxicity_triggers_alert(self):
         monitor = BiasMonitor()
         monitor.record_observation(
-            model="test", prompt="p", response="r",
-            bias_score=0.0, toxicity_score=0.6,
+            model="test",
+            prompt="p",
+            response="r",
+            bias_score=0.0,
+            toxicity_score=0.6,
         )
         alerts = monitor.get_alerts(level="warning")
         assert len(alerts) >= 1
@@ -64,12 +61,18 @@ class TestBiasMonitor:
     def test_demographic_breakdown(self):
         monitor = BiasMonitor()
         monitor.record_observation(
-            model="test", prompt="p", response="r",
-            bias_score=0.2, demographic_group="group_a",
+            model="test",
+            prompt="p",
+            response="r",
+            bias_score=0.2,
+            demographic_group="group_a",
         )
         monitor.record_observation(
-            model="test", prompt="p", response="r",
-            bias_score=0.8, demographic_group="group_b",
+            model="test",
+            prompt="p",
+            response="r",
+            bias_score=0.8,
+            demographic_group="group_b",
         )
         breakdown = monitor.get_demographic_breakdown()
         assert "group_a" in breakdown
@@ -79,9 +82,7 @@ class TestBiasMonitor:
     def test_window_size_limit(self):
         monitor = BiasMonitor(window_size=5)
         for _i in range(10):
-            monitor.record_observation(
-                model="test", prompt="p", response="r", bias_score=0.1
-            )
+            monitor.record_observation(model="test", prompt="p", response="r", bias_score=0.1)
         stats = monitor.get_rolling_stats()
         assert stats["window_size"] == 5
 
@@ -93,12 +94,18 @@ class TestBiasMonitor:
     def test_flagged_tracking(self):
         monitor = BiasMonitor()
         monitor.record_observation(
-            model="test", prompt="p", response="r",
-            bias_score=0.1, flagged=True,
+            model="test",
+            prompt="p",
+            response="r",
+            bias_score=0.1,
+            flagged=True,
         )
         monitor.record_observation(
-            model="test", prompt="p", response="r",
-            bias_score=0.1, flagged=False,
+            model="test",
+            prompt="p",
+            response="r",
+            bias_score=0.1,
+            flagged=False,
         )
         stats = monitor.get_rolling_stats()
         assert stats["bias"]["flagged_pct"] == 50.0

@@ -6,7 +6,6 @@ bias evaluation. Configures a local Ollama model as the LLM judge
 instead of the default GPT-4, making it completely free.
 """
 
-
 from deepeval.metrics import BiasMetric, ToxicityMetric
 from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.test_case import LLMTestCase
@@ -86,18 +85,14 @@ class DeepEvalBiasRunner:
             model=judge,
         )
 
-    def create_test_cases(
-        self, prompts: list[str] = None
-    ) -> list[LLMTestCase]:
+    def create_test_cases(self, prompts: list[str] = None) -> list[LLMTestCase]:
         """Create bias test cases by generating responses."""
         prompts = prompts or BIAS_TEST_PROMPTS
 
         test_cases = []
         for prompt in prompts:
             output = generate_response(self.model, prompt)
-            test_cases.append(
-                LLMTestCase(input=prompt, actual_output=output)
-            )
+            test_cases.append(LLMTestCase(input=prompt, actual_output=output))
 
         return test_cases
 
@@ -111,37 +106,45 @@ class DeepEvalBiasRunner:
         for tc in test_cases:
             try:
                 self.bias_metric.measure(tc)
-                bias_scores.append({
-                    "input": tc.input,
-                    "output": tc.actual_output[:200],
-                    "bias_score": self.bias_metric.score,
-                    "bias_reason": self.bias_metric.reason,
-                    "passed": self.bias_metric.is_successful(),
-                })
+                bias_scores.append(
+                    {
+                        "input": tc.input,
+                        "output": tc.actual_output[:200],
+                        "bias_score": self.bias_metric.score,
+                        "bias_reason": self.bias_metric.reason,
+                        "passed": self.bias_metric.is_successful(),
+                    }
+                )
             except Exception as e:
                 logger.warning(f"Bias metric failed for '{tc.input[:50]}': {e}")
-                bias_scores.append({
-                    "input": tc.input,
-                    "output": tc.actual_output[:200],
-                    "bias_score": None,
-                    "bias_reason": str(e),
-                    "passed": None,
-                })
+                bias_scores.append(
+                    {
+                        "input": tc.input,
+                        "output": tc.actual_output[:200],
+                        "bias_score": None,
+                        "bias_reason": str(e),
+                        "passed": None,
+                    }
+                )
 
             try:
                 self.toxicity_metric.measure(tc)
-                toxicity_scores.append({
-                    "input": tc.input,
-                    "toxicity_score": self.toxicity_metric.score,
-                    "passed": self.toxicity_metric.is_successful(),
-                })
+                toxicity_scores.append(
+                    {
+                        "input": tc.input,
+                        "toxicity_score": self.toxicity_metric.score,
+                        "passed": self.toxicity_metric.is_successful(),
+                    }
+                )
             except Exception as e:
                 logger.warning(f"Toxicity metric failed for '{tc.input[:50]}': {e}")
-                toxicity_scores.append({
-                    "input": tc.input,
-                    "toxicity_score": None,
-                    "passed": None,
-                })
+                toxicity_scores.append(
+                    {
+                        "input": tc.input,
+                        "toxicity_score": None,
+                        "passed": None,
+                    }
+                )
 
         valid_bias = [b for b in bias_scores if b["bias_score"] is not None]
         valid_tox = [t for t in toxicity_scores if t["toxicity_score"] is not None]
@@ -152,15 +155,18 @@ class DeepEvalBiasRunner:
             "total_prompts": len(bias_scores),
             "avg_bias_score": (
                 round(sum(b["bias_score"] for b in valid_bias) / len(valid_bias), 4)
-                if valid_bias else None
+                if valid_bias
+                else None
             ),
             "bias_pass_rate": (
                 round(sum(b["passed"] for b in valid_bias) / len(valid_bias), 4)
-                if valid_bias else None
+                if valid_bias
+                else None
             ),
             "avg_toxicity_score": (
                 round(sum(t["toxicity_score"] for t in valid_tox) / len(valid_tox), 4)
-                if valid_tox else None
+                if valid_tox
+                else None
             ),
             "detailed_results": bias_scores,
         }

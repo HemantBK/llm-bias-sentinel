@@ -60,10 +60,12 @@ class RedTeamReportGenerator:
             for esc in escalations:
                 fig = self._escalation_timeline(esc, model_name)
                 if fig:
-                    charts.append((
-                        f"Escalation — {model_name} ({esc['group']}/{esc['topic']})",
-                        fig,
-                    ))
+                    charts.append(
+                        (
+                            f"Escalation — {model_name} ({esc['group']}/{esc['topic']})",
+                            fig,
+                        )
+                    )
 
         # Build HTML
         html_content = self._build_html(report, charts)
@@ -81,21 +83,21 @@ class RedTeamReportGenerator:
             return None
 
         models = list(summary.keys())
-        rates = [
-            (summary[m].get("jailbreak_success_rate") or 0) * 100
-            for m in models
-        ]
+        rates = [(summary[m].get("jailbreak_success_rate") or 0) * 100 for m in models]
         risk_levels = [summary[m].get("risk_level", "?") for m in models]
         colors = [self._risk_color(rl) for rl in risk_levels]
 
-        fig = go.Figure(data=[
-            go.Bar(
-                x=models, y=rates,
-                marker_color=colors,
-                text=[f"{r:.1f}%" for r in rates],
-                textposition="outside",
-            )
-        ])
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=models,
+                    y=rates,
+                    marker_color=colors,
+                    text=[f"{r:.1f}%" for r in rates],
+                    textposition="outside",
+                )
+            ]
+        )
         fig.update_layout(
             yaxis_title="Jailbreak Success Rate (%)",
             yaxis_range=[0, max(rates + [20]) * 1.2],
@@ -103,7 +105,8 @@ class RedTeamReportGenerator:
         )
         fig.add_hline(
             y=config.red_team_max_success_rate * 100,
-            line_dash="dash", line_color="red",
+            line_dash="dash",
+            line_color="red",
             annotation_text=f"Threshold ({config.red_team_max_success_rate:.0%})",
         )
         return fig
@@ -134,14 +137,17 @@ class RedTeamReportGenerator:
         if not heatmap_data.get("values"):
             return None
 
-        fig = go.Figure(data=go.Heatmap(
-            z=heatmap_data["values"],
-            x=heatmap_data["columns"],
-            y=heatmap_data["index"],
-            colorscale="RdYlGn_r",
-            zmin=0, zmax=3,
-            colorbar_title="Bias Score",
-        ))
+        fig = go.Figure(
+            data=go.Heatmap(
+                z=heatmap_data["values"],
+                x=heatmap_data["columns"],
+                y=heatmap_data["index"],
+                colorscale="RdYlGn_r",
+                zmin=0,
+                zmax=3,
+                colorbar_title="Bias Score",
+            )
+        )
         fig.update_layout(
             title=f"Bias Elicitation Grid — {model_name}",
             xaxis_title="Topic",
@@ -161,14 +167,17 @@ class RedTeamReportGenerator:
         labels = [r["bias_label"] for r in results]
 
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=levels, y=scores,
-            mode="lines+markers+text",
-            text=labels,
-            textposition="top center",
-            marker=dict(size=12, color=scores, colorscale="RdYlGn_r", cmin=0, cmax=3),
-            line=dict(width=2),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=levels,
+                y=scores,
+                mode="lines+markers+text",
+                text=labels,
+                textposition="top center",
+                marker=dict(size=12, color=scores, colorscale="RdYlGn_r", cmin=0, cmax=3),
+                line=dict(width=2),
+            )
+        )
         fig.update_layout(
             xaxis_title="Escalation Level",
             yaxis_title="Bias Score",
@@ -178,7 +187,9 @@ class RedTeamReportGenerator:
         broke = esc_data.get("broke_at_level")
         if broke is not None:
             fig.add_vline(
-                x=broke, line_dash="dash", line_color="red",
+                x=broke,
+                line_dash="dash",
+                line_color="red",
                 annotation_text="Model broke here",
             )
         return fig

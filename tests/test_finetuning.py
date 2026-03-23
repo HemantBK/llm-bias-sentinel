@@ -59,6 +59,7 @@ class TestLoRATrainerConfig:
 
     def test_import_config(self):
         from src.finetuning.lora_trainer import LoRATrainingConfig
+
         cfg = LoRATrainingConfig()
         assert cfg.lora_r == 16
         assert cfg.lora_alpha == 32
@@ -68,6 +69,7 @@ class TestLoRATrainerConfig:
 
     def test_config_custom_values(self):
         from src.finetuning.lora_trainer import LoRATrainingConfig
+
         cfg = LoRATrainingConfig(
             base_model="test-model",
             lora_r=8,
@@ -81,5 +83,6 @@ class TestLoRATrainerConfig:
 
     def test_finetune_availability_flag(self):
         from src.finetuning.lora_trainer import FINETUNE_AVAILABLE
+
         # Should be True or False depending on deps, but should exist
         assert isinstance(FINETUNE_AVAILABLE, bool)

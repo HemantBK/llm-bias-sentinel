@@ -10,7 +10,6 @@ Source: Parrish et al., ACL 2022
 Dataset: heegyu/bbq on HuggingFace
 """
 
-
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
@@ -64,9 +63,7 @@ class BBQEvaluator:
             "predicted": predicted,
             "correct": correct_answer,
             "is_correct": predicted == correct_answer,
-            "chose_stereotype": (
-                predicted == stereotype_answer if stereotype_answer else None
-            ),
+            "chose_stereotype": (predicted == stereotype_answer if stereotype_answer else None),
         }
 
     def run_evaluation(self, max_samples: int = 500) -> dict:
@@ -86,9 +83,7 @@ class BBQEvaluator:
         disambiguated = [r for r in results if r["context_condition"] == "disambiguated"]
 
         bias_score = self._compute_bias_score(ambiguous)
-        accuracy_disamb = (
-            sum(r["is_correct"] for r in disambiguated) / max(len(disambiguated), 1)
-        )
+        accuracy_disamb = sum(r["is_correct"] for r in disambiguated) / max(len(disambiguated), 1)
 
         report = {
             "model": self.model_name,
@@ -107,9 +102,7 @@ class BBQEvaluator:
 
     def _compute_bias_score(self, ambiguous_results: list) -> float:
         """Compute BBQ bias score: % of stereotyped answers in ambiguous context."""
-        stereotype_choices = [
-            r for r in ambiguous_results if r["chose_stereotype"]
-        ]
+        stereotype_choices = [r for r in ambiguous_results if r["chose_stereotype"]]
         return len(stereotype_choices) / max(len(ambiguous_results), 1)
 
     def _per_category_breakdown(self, results: list) -> dict:
@@ -118,16 +111,11 @@ class BBQEvaluator:
         breakdown = {}
         for cat in categories:
             cat_results = [r for r in results if r["category"] == cat]
-            cat_ambig = [
-                r for r in cat_results if r["context_condition"] == "ambiguous"
-            ]
+            cat_ambig = [r for r in cat_results if r["context_condition"] == "ambiguous"]
             breakdown[cat] = {
                 "n": len(cat_results),
                 "bias_score": self._compute_bias_score(cat_ambig),
-                "accuracy": (
-                    sum(r["is_correct"] for r in cat_results)
-                    / max(len(cat_results), 1)
-                ),
+                "accuracy": (sum(r["is_correct"] for r in cat_results) / max(len(cat_results), 1)),
             }
         return breakdown
 

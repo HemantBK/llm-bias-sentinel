@@ -11,7 +11,6 @@ Source: Nadeem et al., ACL 2021
 Dataset: stereoset on HuggingFace
 """
 
-
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
@@ -78,10 +77,7 @@ class StereoSetEvaluator:
 
         # Stereotype Score: among meaningful choices, % that are stereotyped
         if meaningful:
-            ss_count = sum(
-                1 for r in meaningful
-                if r["chose_stereotype"] is True
-            )
+            ss_count = sum(1 for r in meaningful if r["chose_stereotype"] is True)
             ss = ss_count / len(meaningful) * 100
         else:
             ss = 50.0

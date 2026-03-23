@@ -58,10 +58,13 @@ class TestBiasCheckEndpoint:
             "src.guardrails_app.guardrails_engine.StandaloneGuardrails",
             return_value=mock_instance,
         ):
-            response = client.post("/check-bias", json={
-                "text": "Hello, how are you?",
-                "check_type": "input",
-            })
+            response = client.post(
+                "/check-bias",
+                json={
+                    "text": "Hello, how are you?",
+                    "check_type": "input",
+                },
+            )
 
         assert response.status_code == 200
         data = response.json()
@@ -69,19 +72,25 @@ class TestBiasCheckEndpoint:
         assert data["text"] == "Hello, how are you?"
 
     def test_bias_check_empty_text_rejected(self):
-        response = client.post("/check-bias", json={
-            "text": "",
-            "check_type": "input",
-        })
+        response = client.post(
+            "/check-bias",
+            json={
+                "text": "",
+                "check_type": "input",
+            },
+        )
         assert response.status_code == 422  # Validation error
 
 
 class TestCounterfactualEndpoint:
     def test_counterfactual_generation(self):
-        response = client.post("/counterfactual", json={
-            "prompt": "The man went to the office",
-            "categories": ["gender"],
-        })
+        response = client.post(
+            "/counterfactual",
+            json={
+                "prompt": "The man went to the office",
+                "categories": ["gender"],
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["original"] == "The man went to the office"
@@ -89,10 +98,13 @@ class TestCounterfactualEndpoint:
         assert len(data["counterfactuals"]) >= 1
 
     def test_counterfactual_no_match(self):
-        response = client.post("/counterfactual", json={
-            "prompt": "The weather is nice today",
-            "categories": ["gender"],
-        })
+        response = client.post(
+            "/counterfactual",
+            json={
+                "prompt": "The weather is nice today",
+                "categories": ["gender"],
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["total_generated"] == 0
@@ -100,11 +112,14 @@ class TestCounterfactualEndpoint:
 
 class TestEvaluateEndpoint:
     def test_evaluate_returns_job_id(self):
-        response = client.post("/evaluate", json={
-            "models": [{"name": "test", "model_id": "llama3"}],
-            "benchmarks": ["bbq"],
-            "max_samples": 10,
-        })
+        response = client.post(
+            "/evaluate",
+            json={
+                "models": [{"name": "test", "model_id": "llama3"}],
+                "benchmarks": ["bbq"],
+                "max_samples": 10,
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert "job_id" in data
@@ -117,10 +132,13 @@ class TestEvaluateEndpoint:
 
 class TestRedTeamEndpoint:
     def test_red_team_returns_job_id(self):
-        response = client.post("/red-team", json={
-            "models": [{"name": "test", "model_id": "llama3"}],
-            "max_attack_prompts": 10,
-        })
+        response = client.post(
+            "/red-team",
+            json={
+                "models": [{"name": "test", "model_id": "llama3"}],
+                "max_attack_prompts": 10,
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert "job_id" in data
@@ -133,7 +151,10 @@ class TestRedTeamEndpoint:
 
 class TestGenerateEndpoint:
     def test_generate_empty_prompt_rejected(self):
-        response = client.post("/generate", json={
-            "prompt": "",
-        })
+        response = client.post(
+            "/generate",
+            json={
+                "prompt": "",
+            },
+        )
         assert response.status_code == 422

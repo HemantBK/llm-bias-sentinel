@@ -34,10 +34,7 @@ try:
     RAG_AVAILABLE = True
 except ImportError:
     RAG_AVAILABLE = False
-    logger.warning(
-        "RAG dependencies not installed. "
-        "Run: pip install 'llm-bias-sentinel[rag]'"
-    )
+    logger.warning("RAG dependencies not installed. " "Run: pip install 'llm-bias-sentinel[rag]'")
 
 from src.models.model_loader import generate_response, load_model
 
@@ -100,6 +97,7 @@ BIASED_DOCUMENTS = {
 @dataclass
 class RAGTestConfig:
     """Configuration for RAG bias testing."""
+
     embedding_model: str = "all-MiniLM-L6-v2"  # Free, runs locally
     collection_name: str = "bias_test_collection"
     top_k: int = 3
@@ -116,8 +114,7 @@ class RAGBiasTester:
     ):
         if not RAG_AVAILABLE:
             raise RuntimeError(
-                "RAG dependencies not installed. "
-                "Run: pip install 'llm-bias-sentinel[rag]'"
+                "RAG dependencies not installed. " "Run: pip install 'llm-bias-sentinel[rag]'"
             )
 
         self.model = load_model(**model_config)
@@ -128,9 +125,11 @@ class RAGBiasTester:
         self.embedder = SentenceTransformer(self.config.embedding_model)
 
         # Initialize ChromaDB (local, free)
-        self.chroma_client = chromadb.Client(Settings(
-            anonymized_telemetry=False,
-        ))
+        self.chroma_client = chromadb.Client(
+            Settings(
+                anonymized_telemetry=False,
+            )
+        )
 
     # ── Test 1: Context Bias Injection ───────────────────────
 
@@ -157,17 +156,12 @@ class RAGBiasTester:
             no_ctx_response = generate_response(self.model, query)
 
             # Response with NEUTRAL context only
-            neutral_ctx = self._retrieve_from_docs(
-                query, BIASED_DOCUMENTS["neutral"]
-            )
+            neutral_ctx = self._retrieve_from_docs(query, BIASED_DOCUMENTS["neutral"])
             neutral_prompt = self._build_rag_prompt(query, neutral_ctx)
             neutral_response = generate_response(self.model, neutral_prompt)
 
             # Response with BIASED context
-            biased_docs = (
-                BIASED_DOCUMENTS["race_negative"]
-                + BIASED_DOCUMENTS["gender_stereotyped"]
-            )
+            biased_docs = BIASED_DOCUMENTS["race_negative"] + BIASED_DOCUMENTS["gender_stereotyped"]
             biased_ctx = self._retrieve_from_docs(query, biased_docs)
             biased_prompt = self._build_rag_prompt(query, biased_ctx)
             biased_response = generate_response(self.model, biased_prompt)
@@ -182,16 +176,14 @@ class RAGBiasTester:
                 score = self._judge_bias(query, response)
                 scores[label] = score
 
-            results.append({
-                "query": query,
-                "scores": scores,
-                "bias_amplification": (
-                    scores["biased_context"] - scores["no_context"]
-                ),
-                "neutral_effect": (
-                    scores["neutral_context"] - scores["no_context"]
-                ),
-            })
+            results.append(
+                {
+                    "query": query,
+                    "scores": scores,
+                    "bias_amplification": (scores["biased_context"] - scores["no_context"]),
+                    "neutral_effect": (scores["neutral_context"] - scores["no_context"]),
+                }
+            )
 
         report = {
             "test": "context_bias_injection",
@@ -206,10 +198,7 @@ class RAGBiasTester:
             "finding": self._interpret_injection_results(results),
         }
 
-        logger.info(
-            f"Context injection: mean amplification = "
-            f"{report['mean_amplification']}"
-        )
+        logger.info(f"Context injection: mean amplification = " f"{report['mean_amplification']}")
         return report
 
     # ── Test 2: Retrieval Disparity ──────────────────────────
@@ -246,9 +235,7 @@ class RAGBiasTester:
                 for group in group_list:
                     query = template.format(group=group)
                     retrieved = collection.query(
-                        query_embeddings=[
-                            self.embedder.encode(query).tolist()
-                        ],
+                        query_embeddings=[self.embedder.encode(query).tolist()],
                         n_results=self.config.top_k,
                     )
                     distances = retrieved["distances"][0] if retrieved["distances"] else []
@@ -256,8 +243,7 @@ class RAGBiasTester:
 
                     group_results[group] = {
                         "mean_distance": (
-                            round(sum(distances) / len(distances), 4)
-                            if distances else None
+                            round(sum(distances) / len(distances), 4) if distances else None
                         ),
                         "n_retrieved": len(documents),
                         "doc_preview": documents[0][:100] if documents else "",
@@ -265,28 +251,28 @@ class RAGBiasTester:
 
                 # Compute disparity within this category
                 valid_distances = [
-                    v["mean_distance"] for v in group_results.values()
+                    v["mean_distance"]
+                    for v in group_results.values()
                     if v["mean_distance"] is not None
                 ]
                 disparity = (
-                    max(valid_distances) - min(valid_distances)
-                    if len(valid_distances) >= 2 else 0
+                    max(valid_distances) - min(valid_distances) if len(valid_distances) >= 2 else 0
                 )
 
-                results.append({
-                    "template": template,
-                    "category": category,
-                    "per_group": group_results,
-                    "retrieval_disparity": round(disparity, 4),
-                })
+                results.append(
+                    {
+                        "template": template,
+                        "category": category,
+                        "per_group": group_results,
+                        "retrieval_disparity": round(disparity, 4),
+                    }
+                )
 
         report = {
             "test": "retrieval_disparity",
             "model": self.model_name,
             "results": results,
-            "max_disparity": round(
-                max(r["retrieval_disparity"] for r in results), 4
-            ),
+            "max_disparity": round(max(r["retrieval_disparity"] for r in results), 4),
         }
 
         logger.info(f"Retrieval disparity: max = {report['max_disparity']}")
@@ -329,26 +315,24 @@ class RAGBiasTester:
                 ctx_a = self._retrieve_from_collection(collection, query_a)
                 ctx_b = self._retrieve_from_collection(collection, query_b)
 
-                response_a = generate_response(
-                    self.model, self._build_rag_prompt(query_a, ctx_a)
-                )
-                response_b = generate_response(
-                    self.model, self._build_rag_prompt(query_b, ctx_b)
-                )
+                response_a = generate_response(self.model, self._build_rag_prompt(query_a, ctx_a))
+                response_b = generate_response(self.model, self._build_rag_prompt(query_b, ctx_b))
 
                 # Judge both
                 score_a = self._judge_bias(query_a, response_a)
                 score_b = self._judge_bias(query_b, response_b)
 
-                results.append({
-                    "term_a": term_a,
-                    "term_b": term_b,
-                    "template": template,
-                    "score_a": score_a,
-                    "score_b": score_b,
-                    "score_diff": abs(score_a - score_b),
-                    "context_overlap": self._context_similarity(ctx_a, ctx_b),
-                })
+                results.append(
+                    {
+                        "term_a": term_a,
+                        "term_b": term_b,
+                        "template": template,
+                        "score_a": score_a,
+                        "score_b": score_b,
+                        "score_diff": abs(score_a - score_b),
+                        "context_overlap": self._context_similarity(ctx_a, ctx_b),
+                    }
+                )
 
         mean_diff = sum(r["score_diff"] for r in results) / max(len(results), 1)
 
@@ -357,9 +341,7 @@ class RAGBiasTester:
             "model": self.model_name,
             "results": results,
             "mean_score_difference": round(mean_diff, 3),
-            "max_score_difference": round(
-                max(r["score_diff"] for r in results), 3
-            ),
+            "max_score_difference": round(max(r["score_diff"] for r in results), 3),
         }
 
         logger.info(f"Counterfactual RAG: mean diff = {mean_diff:.3f}")
@@ -383,9 +365,7 @@ class RAGBiasTester:
                 "retrieval_disparity": disparity,
                 "counterfactual": counterfactual,
             },
-            "overall_risk": self._compute_overall_risk(
-                injection, disparity, counterfactual
-            ),
+            "overall_risk": self._compute_overall_risk(injection, disparity, counterfactual),
         }
 
         logger.info(f"RAG bias assessment complete: risk = {report['overall_risk']}")
@@ -412,16 +392,18 @@ class RAGBiasTester:
 
         # Cosine similarity
         import numpy as np
+
         similarities = np.dot(doc_embs, query_emb) / (
             np.linalg.norm(doc_embs, axis=1) * np.linalg.norm(query_emb)
         )
-        top_indices = np.argsort(similarities)[-self.config.top_k:][::-1]
+        top_indices = np.argsort(similarities)[-self.config.top_k :][::-1]
         return [doc_texts[i] for i in top_indices]
 
     def _create_collection(self, name: str, docs: list[dict]):
         """Create a ChromaDB collection with documents."""
         # Delete if exists
         import contextlib
+
         with contextlib.suppress(Exception):
             self.chroma_client.delete_collection(name)
 

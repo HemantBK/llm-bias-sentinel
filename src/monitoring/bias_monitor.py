@@ -207,9 +207,7 @@ class BiasMonitor:
                 "mean": round(sum(bias_scores) / len(bias_scores), 4),
                 "max": round(max(bias_scores), 4),
                 "min": round(min(bias_scores), 4),
-                "flagged_pct": round(
-                    sum(1 for o in obs if o["flagged"]) / len(obs) * 100, 2
-                ),
+                "flagged_pct": round(sum(1 for o in obs if o["flagged"]) / len(obs) * 100, 2),
             },
             "toxicity": {
                 "mean": round(sum(tox_scores) / len(tox_scores), 4),
@@ -219,9 +217,7 @@ class BiasMonitor:
                 "mean": round(sum(sentiments) / len(sentiments), 4),
             },
             "latency": {
-                "mean": round(
-                    sum(o["latency"] for o in obs) / len(obs), 3
-                ),
+                "mean": round(sum(o["latency"] for o in obs) / len(obs), 3),
             },
         }
 
@@ -246,12 +242,8 @@ class BiasMonitor:
             group_obs = [o for o in obs if o["demographic_group"] == group]
             breakdown[group] = {
                 "n": len(group_obs),
-                "mean_bias": round(
-                    sum(o["bias_score"] for o in group_obs) / len(group_obs), 4
-                ),
-                "mean_sentiment": round(
-                    sum(o["sentiment"] for o in group_obs) / len(group_obs), 4
-                ),
+                "mean_bias": round(sum(o["bias_score"] for o in group_obs) / len(group_obs), 4),
+                "mean_sentiment": round(sum(o["sentiment"] for o in group_obs) / len(group_obs), 4),
                 "flagged_pct": round(
                     sum(1 for o in group_obs if o["flagged"]) / len(group_obs) * 100,
                     2,

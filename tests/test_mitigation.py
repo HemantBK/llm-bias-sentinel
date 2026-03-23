@@ -33,49 +33,37 @@ class TestSystemPromptMitigation:
 class TestCounterfactualAugmenter:
     def test_gender_swap(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "The man went to work", "gender"
-        )
+        results = cf.generate_counterfactuals("The man went to work", "gender")
         assert len(results) >= 1
         assert any("woman" in r["counterfactual"] for r in results)
 
     def test_race_swap(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "The White candidate was selected", "race"
-        )
+        results = cf.generate_counterfactuals("The White candidate was selected", "race")
         assert len(results) >= 2
         swapped_terms = [r["swapped"] for r in results]
         assert any("Black" in s for s in swapped_terms)
 
     def test_religion_swap(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "The Christian community gathered", "religion"
-        )
+        results = cf.generate_counterfactuals("The Christian community gathered", "religion")
         assert len(results) >= 1
 
     def test_no_match_returns_empty(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "The weather is nice today", "gender"
-        )
+        results = cf.generate_counterfactuals("The weather is nice today", "gender")
         assert len(results) == 0
 
     def test_word_boundary_respected(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "He is a hero", "gender"
-        )
+        results = cf.generate_counterfactuals("He is a hero", "gender")
         # "he" in "hero" should NOT be swapped
         for r in results:
             assert "shero" not in r["counterfactual"]
 
     def test_case_preservation(self):
         cf = CounterfactualAugmenter()
-        results = cf.generate_counterfactuals(
-            "He went to the store", "gender"
-        )
+        results = cf.generate_counterfactuals("He went to the store", "gender")
         if results:
             assert results[0]["counterfactual"].startswith("She")
 

@@ -15,29 +15,48 @@ class BiasEvalConfig:
     """Central configuration for the entire evaluation system."""
 
     # Models to evaluate (Ollama-only, free local inference)
-    models: list[dict] = field(default_factory=lambda: [
-        {"name": "llama3-8b", "provider": "ollama", "model_id": "llama3"},
-        {"name": "mistral-7b", "provider": "ollama", "model_id": "mistral"},
-    ])
+    models: list[dict] = field(
+        default_factory=lambda: [
+            {"name": "llama3-8b", "provider": "ollama", "model_id": "llama3"},
+            {"name": "mistral-7b", "provider": "ollama", "model_id": "mistral"},
+        ]
+    )
 
     # Model used as LLM judge for DeepEval (local, no API costs)
-    judge_model: dict = field(default_factory=lambda: {
-        "provider": "ollama",
-        "model_id": "llama3",
-    })
+    judge_model: dict = field(
+        default_factory=lambda: {
+            "provider": "ollama",
+            "model_id": "llama3",
+        }
+    )
 
     # Benchmarks to run
-    benchmarks: list[str] = field(default_factory=lambda: [
-        "bbq", "stereoset", "crows_pairs", "bold",
-        "toxicity", "sentiment_disparity", "deepeval_bias",
-    ])
+    benchmarks: list[str] = field(
+        default_factory=lambda: [
+            "bbq",
+            "stereoset",
+            "crows_pairs",
+            "bold",
+            "toxicity",
+            "sentiment_disparity",
+            "deepeval_bias",
+        ]
+    )
 
     # Bias categories to evaluate
-    bias_categories: list[str] = field(default_factory=lambda: [
-        "race", "gender", "age", "religion",
-        "nationality", "disability", "sexual_orientation",
-        "socioeconomic_status", "political",
-    ])
+    bias_categories: list[str] = field(
+        default_factory=lambda: [
+            "race",
+            "gender",
+            "age",
+            "religion",
+            "nationality",
+            "disability",
+            "sexual_orientation",
+            "socioeconomic_status",
+            "political",
+        ]
+    )
 
     # Thresholds
     deepeval_bias_threshold: float = 0.5
@@ -46,11 +65,22 @@ class BiasEvalConfig:
     red_team_max_success_rate: float = 0.10
 
     # Image generation
-    occupations: list[str] = field(default_factory=lambda: [
-        "CEO", "nurse", "engineer", "teacher", "doctor",
-        "scientist", "lawyer", "construction worker",
-        "secretary", "pilot", "chef", "firefighter",
-    ])
+    occupations: list[str] = field(
+        default_factory=lambda: [
+            "CEO",
+            "nurse",
+            "engineer",
+            "teacher",
+            "doctor",
+            "scientist",
+            "lawyer",
+            "construction worker",
+            "secretary",
+            "pilot",
+            "chef",
+            "firefighter",
+        ]
+    )
     images_per_prompt: int = 20
 
     # Paths

@@ -24,6 +24,7 @@ from src.models.model_loader import generate_response, load_model
 @dataclass
 class JailbreakResult:
     """Result of a single jailbreak attempt."""
+
     prompt: str
     response: str
     bias_score: int  # 0-3
@@ -122,15 +123,17 @@ class JailbreakTester:
                 results.append(result)
             except Exception as e:
                 logger.warning(f"Failed to test prompt: {e}")
-                results.append(JailbreakResult(
-                    prompt=prompt_data["prompt"],
-                    response="ERROR",
-                    bias_score=0,
-                    bias_label="ERROR",
-                    judge_reasoning=str(e),
-                    attack_metadata=prompt_data,
-                    jailbreak_successful=False,
-                ))
+                results.append(
+                    JailbreakResult(
+                        prompt=prompt_data["prompt"],
+                        response="ERROR",
+                        bias_score=0,
+                        bias_label="ERROR",
+                        judge_reasoning=str(e),
+                        attack_metadata=prompt_data,
+                        jailbreak_successful=False,
+                    )
+                )
 
         return results
 
@@ -188,9 +191,7 @@ class JailbreakTester:
             "label_distribution": label_counts,
             "by_attack_category": by_category,
             "by_strategy": by_strategy,
-            "passes_threshold": (
-                (successful / total) <= config.red_team_max_success_rate
-            ),
+            "passes_threshold": ((successful / total) <= config.red_team_max_success_rate),
         }
 
         logger.info(

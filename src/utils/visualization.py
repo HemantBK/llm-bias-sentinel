@@ -74,7 +74,11 @@ def create_benchmark_bar_chart(
     values = [r[metric_key] for r in filtered]
 
     fig = go.Figure(
-        data=[go.Bar(x=models, y=values, marker_color=["#636EFA", "#EF553B", "#00CC96"][:len(models)])]
+        data=[
+            go.Bar(
+                x=models, y=values, marker_color=["#636EFA", "#EF553B", "#00CC96"][: len(models)]
+            )
+        ]
     )
     fig.update_layout(
         title=title or f"{benchmark} — {metric_key}",
@@ -109,12 +113,14 @@ def create_stereotype_radar(
         categories.append(categories[0])
         values.append(values[0])
 
-        fig.add_trace(go.Scatterpolar(
-            r=values,
-            theta=categories,
-            fill="toself",
-            name=result["model"],
-        ))
+        fig.add_trace(
+            go.Scatterpolar(
+                r=values,
+                theta=categories,
+                fill="toself",
+                name=result["model"],
+            )
+        )
 
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
@@ -132,9 +138,7 @@ def create_sentiment_disparity_chart(
     output_path: str = "reports/sentiment_disparity_chart.html",
 ) -> go.Figure:
     """Create grouped bar chart of sentiment by demographic group."""
-    sentiment_results = [
-        r for r in results if r.get("benchmark") == "SentimentDisparity"
-    ]
+    sentiment_results = [r for r in results if r.get("benchmark") == "SentimentDisparity"]
 
     if not sentiment_results:
         logger.warning("No SentimentDisparity results found")
@@ -145,11 +149,13 @@ def create_sentiment_disparity_chart(
         for category, data in result.get("per_category", {}).items():
             groups = list(data["per_group_means"].keys())
             means = list(data["per_group_means"].values())
-            fig.add_trace(go.Bar(
-                name=f"{result['model']} - {category}",
-                x=groups,
-                y=means,
-            ))
+            fig.add_trace(
+                go.Bar(
+                    name=f"{result['model']} - {category}",
+                    x=groups,
+                    y=means,
+                )
+            )
 
     fig.update_layout(
         title="Sentiment Polarity by Demographic Group",

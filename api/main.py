@@ -78,9 +78,7 @@ EVAL_DURATION = Histogram(
     "Duration of evaluation runs",
     ["benchmark"],
 )
-ACTIVE_JOBS = Gauge(
-    "active_jobs", "Number of currently running jobs"
-)
+ACTIVE_JOBS = Gauge("active_jobs", "Number of currently running jobs")
 
 # ─── In-Memory Job Store ─────────────────────────
 
@@ -89,6 +87,7 @@ START_TIME = time.time()
 
 
 # ─── Lifespan ────────────────────────────────────
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -122,6 +121,7 @@ app.add_middleware(
 
 # ─── Health & Metrics ────────────────────────────
 
+
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 async def health_check():
     """Check API health and Ollama connectivity."""
@@ -129,6 +129,7 @@ async def health_check():
     models = []
     try:
         import httpx
+
         async with httpx.AsyncClient(timeout=5) as client:
             resp = await client.get(f"{config.ollama_base_url}/api/tags")
             if resp.status_code == 200:
@@ -158,14 +159,19 @@ async def prometheus_metrics():
 async def get_stats():
     """Get API usage statistics."""
     return MetricsResponse(
-        total_evaluations=int(EVAL_COUNTER._value.sum() if hasattr(EVAL_COUNTER, '_value') else 0),
-        total_red_team_runs=int(RED_TEAM_COUNTER._value.get() if hasattr(RED_TEAM_COUNTER, '_value') else 0),
-        total_guarded_generations=int(GUARDED_GEN_COUNTER._value.get() if hasattr(GUARDED_GEN_COUNTER, '_value') else 0),
+        total_evaluations=int(EVAL_COUNTER._value.sum() if hasattr(EVAL_COUNTER, "_value") else 0),
+        total_red_team_runs=int(
+            RED_TEAM_COUNTER._value.get() if hasattr(RED_TEAM_COUNTER, "_value") else 0
+        ),
+        total_guarded_generations=int(
+            GUARDED_GEN_COUNTER._value.get() if hasattr(GUARDED_GEN_COUNTER, "_value") else 0
+        ),
         uptime_seconds=round(time.time() - START_TIME, 1),
     )
 
 
 # ─── Benchmark Evaluation ───────────────────────
+
 
 def _run_benchmarks_job(job_id: str, request: RunBenchmarkRequest):
     """Background job: run bias benchmarks."""
@@ -181,9 +187,7 @@ def _run_benchmarks_job(job_id: str, request: RunBenchmarkRequest):
             model_dict = model_cfg.model_dump()
             for benchmark in request.benchmarks:
                 with EVAL_DURATION.labels(benchmark=benchmark.value).time():
-                    result = run_single_benchmark(
-                        benchmark.value, model_dict
-                    )
+                    result = run_single_benchmark(benchmark.value, model_dict)
                     results.append(result)
                     EVAL_COUNTER.labels(
                         benchmark=benchmark.value,
@@ -239,6 +243,7 @@ async def get_benchmark_results(job_id: str):
 
 
 # ─── Red-Team Testing ───────────────────────────
+
 
 def _run_red_team_job(job_id: str, request: RunRedTeamRequest):
     """Background job: run red-team assessment."""
@@ -316,6 +321,7 @@ async def get_red_team_results(job_id: str):
 
 # ─── Guarded Generation ─────────────────────────
 
+
 @app.post("/generate", response_model=GuardedResponse, tags=["Guardrails"])
 async def guarded_generate(request: GuardedGenerateRequest):
     """Generate text with bias guardrails applied."""
@@ -324,10 +330,12 @@ async def guarded_generate(request: GuardedGenerateRequest):
     if request.use_guardrails:
         from src.guardrails_app.guardrails_engine import StandaloneGuardrails
 
-        guardrails = StandaloneGuardrails({
-            "provider": "ollama",
-            "model_id": request.model_id,
-        })
+        guardrails = StandaloneGuardrails(
+            {
+                "provider": "ollama",
+                "model_id": request.model_id,
+            }
+        )
         result = guardrails.guarded_generate(request.prompt)
 
         if result.get("input_flagged"):
@@ -351,6 +359,7 @@ async def guarded_generate(request: GuardedGenerateRequest):
 
 
 # ─── Bias Check ──────────────────────────────────
+
 
 @app.post("/check-bias", response_model=BiasCheckResponse, tags=["Guardrails"])
 async def check_bias(request: BiasCheckRequest):
@@ -377,15 +386,14 @@ async def check_bias(request: BiasCheckRequest):
 
 # ─── Counterfactual Fairness ─────────────────────
 
+
 @app.post("/counterfactual", response_model=CounterfactualResponse, tags=["Analysis"])
 async def generate_counterfactuals(request: CounterfactualRequest):
     """Generate counterfactual versions of a prompt for fairness testing."""
     from src.guardrails_app.mitigation import MitigationPipeline
 
     pipeline = MitigationPipeline()
-    cfs = pipeline.generate_counterfactual_tests(
-        request.prompt, request.categories
-    )
+    cfs = pipeline.generate_counterfactual_tests(request.prompt, request.categories)
 
     return CounterfactualResponse(
         original=request.prompt,
@@ -395,6 +403,7 @@ async def generate_counterfactuals(request: CounterfactualRequest):
 
 
 # ─── Job Management ─────────────────────────────
+
 
 @app.get("/jobs", tags=["System"])
 async def list_jobs():

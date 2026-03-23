@@ -39,8 +39,7 @@ try:
 except ImportError:
     FINETUNE_AVAILABLE = False
     logger.warning(
-        "Fine-tuning dependencies not installed. "
-        "Run: pip install 'llm-bias-sentinel[finetune]'"
+        "Fine-tuning dependencies not installed. " "Run: pip install 'llm-bias-sentinel[finetune]'"
     )
 
 
@@ -56,10 +55,17 @@ class LoRATrainingConfig:
     lora_r: int = 16  # Rank of the low-rank matrices
     lora_alpha: int = 32  # Scaling factor
     lora_dropout: float = 0.05
-    target_modules: list = field(default_factory=lambda: [
-        "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj",
-    ])
+    target_modules: list = field(
+        default_factory=lambda: [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ]
+    )
 
     # Training hyperparameters
     num_epochs: int = 3
@@ -380,11 +386,14 @@ PARAMETER stop "### System:"
             inputs = tokenizer(prompt, return_tensors="pt").to(base.device)
             with torch.no_grad():
                 base_output = base.generate(
-                    **inputs, max_new_tokens=150, temperature=0.7,
-                    do_sample=True, pad_token_id=tokenizer.pad_token_id,
+                    **inputs,
+                    max_new_tokens=150,
+                    temperature=0.7,
+                    do_sample=True,
+                    pad_token_id=tokenizer.pad_token_id,
                 )
             base_response = tokenizer.decode(
-                base_output[0][inputs["input_ids"].shape[1]:],
+                base_output[0][inputs["input_ids"].shape[1] :],
                 skip_special_tokens=True,
             )
 
@@ -392,19 +401,24 @@ PARAMETER stop "### System:"
             adapted = PeftModel.from_pretrained(base, adapter_path)
             with torch.no_grad():
                 adapted_output = adapted.generate(
-                    **inputs, max_new_tokens=150, temperature=0.7,
-                    do_sample=True, pad_token_id=tokenizer.pad_token_id,
+                    **inputs,
+                    max_new_tokens=150,
+                    temperature=0.7,
+                    do_sample=True,
+                    pad_token_id=tokenizer.pad_token_id,
                 )
             adapted_response = tokenizer.decode(
-                adapted_output[0][inputs["input_ids"].shape[1]:],
+                adapted_output[0][inputs["input_ids"].shape[1] :],
                 skip_special_tokens=True,
             )
 
-            comparisons.append({
-                "prompt": prompt,
-                "base_response": base_response[:300],
-                "adapted_response": adapted_response[:300],
-            })
+            comparisons.append(
+                {
+                    "prompt": prompt,
+                    "base_response": base_response[:300],
+                    "adapted_response": adapted_response[:300],
+                }
+            )
 
         return {
             "base_model": self.config.base_model,

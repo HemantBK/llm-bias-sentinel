@@ -78,23 +78,27 @@ class GuardrailsTester:
         biased_results = []
         for prompt in tqdm(biased, desc="Testing biased inputs"):
             check = self.guardrails.check_input(prompt)
-            biased_results.append({
-                "prompt": prompt,
-                "flagged": check["flagged"],
-                "reason": check.get("reason"),
-                "correct": check["flagged"],  # Should be flagged
-            })
+            biased_results.append(
+                {
+                    "prompt": prompt,
+                    "flagged": check["flagged"],
+                    "reason": check.get("reason"),
+                    "correct": check["flagged"],  # Should be flagged
+                }
+            )
 
         # Test legitimate prompts (should NOT be caught)
         legit_results = []
         for prompt in tqdm(legitimate, desc="Testing legitimate inputs"):
             check = self.guardrails.check_input(prompt)
-            legit_results.append({
-                "prompt": prompt,
-                "flagged": check["flagged"],
-                "reason": check.get("reason"),
-                "correct": not check["flagged"],  # Should NOT be flagged
-            })
+            legit_results.append(
+                {
+                    "prompt": prompt,
+                    "flagged": check["flagged"],
+                    "reason": check.get("reason"),
+                    "correct": not check["flagged"],  # Should NOT be flagged
+                }
+            )
 
         # Compute metrics
         true_positives = sum(1 for r in biased_results if r["correct"])
@@ -106,9 +110,7 @@ class GuardrailsTester:
         accuracy = (true_positives + true_negatives) / max(total, 1)
         precision = true_positives / max(true_positives + false_positives, 1)
         recall = true_positives / max(true_positives + false_negatives, 1)
-        f1 = (
-            2 * precision * recall / max(precision + recall, 0.001)
-        )
+        f1 = 2 * precision * recall / max(precision + recall, 0.001)
 
         report = {
             "test": "input_filtering",
@@ -121,12 +123,8 @@ class GuardrailsTester:
             "precision": round(precision, 4),
             "recall": round(recall, 4),
             "f1_score": round(f1, 4),
-            "biased_catch_rate": round(
-                true_positives / max(len(biased_results), 1), 4
-            ),
-            "false_positive_rate": round(
-                false_positives / max(len(legit_results), 1), 4
-            ),
+            "biased_catch_rate": round(true_positives / max(len(biased_results), 1), 4),
+            "false_positive_rate": round(false_positives / max(len(legit_results), 1), 4),
             "biased_details": biased_results,
             "legitimate_details": legit_results,
         }
@@ -146,19 +144,18 @@ class GuardrailsTester:
 
         for prompt in tqdm(BIASED_PROMPTS, desc="Testing output filtering"):
             guarded_result = self.guardrails.guarded_generate(prompt)
-            results.append({
-                "prompt": prompt,
-                "input_flagged": guarded_result["input_flagged"],
-                "output_flagged": guarded_result.get("output_flagged", False),
-                "mitigated": guarded_result.get("mitigated", False),
-                "response_preview": guarded_result["response"][:200],
-            })
+            results.append(
+                {
+                    "prompt": prompt,
+                    "input_flagged": guarded_result["input_flagged"],
+                    "output_flagged": guarded_result.get("output_flagged", False),
+                    "mitigated": guarded_result.get("mitigated", False),
+                    "response_preview": guarded_result["response"][:200],
+                }
+            )
 
         caught_at_input = sum(1 for r in results if r["input_flagged"])
-        caught_at_output = sum(
-            1 for r in results
-            if not r["input_flagged"] and r["output_flagged"]
-        )
+        caught_at_output = sum(1 for r in results if not r["input_flagged"] and r["output_flagged"])
         total_caught = caught_at_input + caught_at_output
 
         report = {
@@ -168,9 +165,7 @@ class GuardrailsTester:
             "caught_at_input": caught_at_input,
             "caught_at_output": caught_at_output,
             "total_caught": total_caught,
-            "overall_catch_rate": round(
-                total_caught / max(len(results), 1), 4
-            ),
+            "overall_catch_rate": round(total_caught / max(len(results), 1), 4),
             "details": results,
         }
 
@@ -204,27 +199,25 @@ class GuardrailsTester:
 
             # Judge both versions
             raw_score = self._judge_bias(prompt, raw_response, model)
-            mitigated_score = self._judge_bias(
-                prompt, mitigated["response"], model
-            )
+            mitigated_score = self._judge_bias(prompt, mitigated["response"], model)
 
-            results.append({
-                "prompt": prompt,
-                "raw_bias_score": raw_score,
-                "mitigated_bias_score": mitigated_score,
-                "improvement": raw_score - mitigated_score,
-                "raw_preview": raw_response[:150],
-                "mitigated_preview": mitigated["response"][:150],
-            })
+            results.append(
+                {
+                    "prompt": prompt,
+                    "raw_bias_score": raw_score,
+                    "mitigated_bias_score": mitigated_score,
+                    "improvement": raw_score - mitigated_score,
+                    "raw_preview": raw_response[:150],
+                    "mitigated_preview": mitigated["response"][:150],
+                }
+            )
 
         improvements = [r["improvement"] for r in results]
         report = {
             "test": "mitigation_quality",
             "model": self.model_name,
             "total_tested": len(results),
-            "mean_improvement": round(
-                sum(improvements) / max(len(improvements), 1), 3
-            ),
+            "mean_improvement": round(sum(improvements) / max(len(improvements), 1), 3),
             "all_improved": all(i > 0 for i in improvements),
             "details": results,
         }
@@ -250,9 +243,7 @@ class GuardrailsTester:
             "input_filtering": input_report,
             "output_filtering": output_report,
             "mitigation_quality": mitigation_report,
-            "overall_grade": self._compute_grade(
-                input_report, output_report, mitigation_report
-            ),
+            "overall_grade": self._compute_grade(input_report, output_report, mitigation_report),
         }
 
         # Save report

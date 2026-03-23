@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 # ─── Enums ───────────────────────────────────────
 
+
 class BenchmarkName(str, Enum):
     BBQ = "bbq"
     STEREOSET = "stereoset"
@@ -46,6 +47,7 @@ class JobStatus(str, Enum):
 
 # ─── Request Models ──────────────────────────────
 
+
 class ModelConfig(BaseModel):
     name: str = Field(..., description="Display name for the model")
     provider: str = Field(default="ollama", description="Model provider")
@@ -55,9 +57,7 @@ class ModelConfig(BaseModel):
 
 class RunBenchmarkRequest(BaseModel):
     models: list[ModelConfig] = Field(
-        default_factory=lambda: [
-            ModelConfig(name="llama3-8b", model_id="llama3")
-        ]
+        default_factory=lambda: [ModelConfig(name="llama3-8b", model_id="llama3")]
     )
     benchmarks: list[BenchmarkName] = Field(
         default_factory=lambda: [BenchmarkName.BBQ, BenchmarkName.STEREOSET]
@@ -67,9 +67,7 @@ class RunBenchmarkRequest(BaseModel):
 
 class RunRedTeamRequest(BaseModel):
     models: list[ModelConfig] = Field(
-        default_factory=lambda: [
-            ModelConfig(name="llama3-8b", model_id="llama3")
-        ]
+        default_factory=lambda: [ModelConfig(name="llama3-8b", model_id="llama3")]
     )
     include_taxonomy: bool = True
     include_mutations: bool = True
@@ -94,12 +92,11 @@ class BiasCheckRequest(BaseModel):
 
 class CounterfactualRequest(BaseModel):
     prompt: str = Field(..., min_length=1)
-    categories: list[str] = Field(
-        default_factory=lambda: ["gender", "race", "religion"]
-    )
+    categories: list[str] = Field(default_factory=lambda: ["gender", "race", "religion"])
 
 
 # ─── Response Models ─────────────────────────────
+
 
 class HealthResponse(BaseModel):
     status: str = "healthy"

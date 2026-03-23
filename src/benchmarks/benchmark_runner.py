@@ -81,11 +81,13 @@ def run_all_benchmarks(
                 all_results.append(result)
             except Exception as e:
                 logger.error(f"Benchmark {benchmark} failed for {model_config['name']}: {e}")
-                all_results.append({
-                    "model": model_config["name"],
-                    "benchmark": benchmark,
-                    "error": str(e),
-                })
+                all_results.append(
+                    {
+                        "model": model_config["name"],
+                        "benchmark": benchmark,
+                        "error": str(e),
+                    }
+                )
 
     # Save results
     reports_dir = Path(config.reports_dir) / "benchmark_results"

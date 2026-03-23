@@ -51,9 +51,7 @@ class RedTeamOrchestrator:
 
         self.generator_config = generator_model_config or self.judge_config
 
-        self.generator = AdversarialGenerator(
-            generator_model_config=self.generator_config
-        )
+        self.generator = AdversarialGenerator(generator_model_config=self.generator_config)
 
         self.report_generator = RedTeamReportGenerator()
 
@@ -114,9 +112,7 @@ class RedTeamOrchestrator:
                     target_model_config=model_config,
                     judge_model_config=self.judge_config,
                 )
-                grid_report = elicitation.run_grid_probe(
-                    max_probes=grid_max_probes
-                )
+                grid_report = elicitation.run_grid_probe(max_probes=grid_max_probes)
                 model_report["grid_probe"] = grid_report
 
                 # ── Step 4: Escalation on weak spots ─────────
@@ -181,9 +177,7 @@ class RedTeamOrchestrator:
             grid = report.get("grid_probe", {})
             escalation = report.get("escalation", [])
 
-            resilient_count = sum(
-                1 for e in escalation if e.get("resilient", False)
-            )
+            resilient_count = sum(1 for e in escalation if e.get("resilient", False))
 
             summary[model_name] = {
                 "jailbreak_success_rate": jb.get("jailbreak_success_rate"),

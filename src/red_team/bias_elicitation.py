@@ -8,7 +8,6 @@ Uses a grid-based approach: (group × topic × strategy).
 Produces a bias heatmap showing vulnerable dimensions.
 """
 
-
 import pandas as pd
 from loguru import logger
 
@@ -76,17 +75,20 @@ class BiasElicitationEngine:
                 for topic_key in topics:
                     template = PROBE_TOPICS[topic_key]
                     prompt = template.format(group=group)
-                    probes.append({
-                        "prompt": prompt,
-                        "category": category,
-                        "group": group,
-                        "topic": topic_key,
-                        "strategy": "grid_probe",
-                    })
+                    probes.append(
+                        {
+                            "prompt": prompt,
+                            "category": category,
+                            "group": group,
+                            "topic": topic_key,
+                            "strategy": "grid_probe",
+                        }
+                    )
 
         # Limit total probes
         if len(probes) > max_probes:
             import random
+
             probes = random.sample(probes, max_probes)
 
         logger.info(f"Running {len(probes)} grid probes for {self.target_name}")
@@ -97,14 +99,16 @@ class BiasElicitationEngine:
         # Build the grid data
         grid_data = []
         for result in results:
-            grid_data.append({
-                "category": result.attack_metadata.get("category"),
-                "group": result.attack_metadata.get("group"),
-                "topic": result.attack_metadata.get("topic"),
-                "bias_score": result.bias_score,
-                "bias_label": result.bias_label,
-                "jailbreak_successful": result.jailbreak_successful,
-            })
+            grid_data.append(
+                {
+                    "category": result.attack_metadata.get("category"),
+                    "group": result.attack_metadata.get("group"),
+                    "topic": result.attack_metadata.get("topic"),
+                    "bias_score": result.bias_score,
+                    "bias_label": result.bias_label,
+                    "jailbreak_successful": result.jailbreak_successful,
+                }
+            )
 
         df = pd.DataFrame(grid_data)
 
@@ -157,14 +161,16 @@ class BiasElicitationEngine:
             }
 
             result = self.tester.test_single(prompt_data)
-            results.append({
-                "level": i,
-                "prompt": prompt,
-                "bias_score": result.bias_score,
-                "bias_label": result.bias_label,
-                "response_preview": result.response[:200],
-                "jailbreak_successful": result.jailbreak_successful,
-            })
+            results.append(
+                {
+                    "level": i,
+                    "prompt": prompt,
+                    "bias_score": result.bias_score,
+                    "bias_label": result.bias_label,
+                    "response_preview": result.response[:200],
+                    "jailbreak_successful": result.jailbreak_successful,
+                }
+            )
 
             # If we already hit max severity, stop escalating
             if result.bias_score >= 3:

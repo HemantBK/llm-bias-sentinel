@@ -18,13 +18,11 @@ from src.config import config
 
 try:
     from nemoguardrails import LLMRails, RailsConfig
+
     NEMO_AVAILABLE = True
 except ImportError:
     NEMO_AVAILABLE = False
-    logger.warning(
-        "NeMo Guardrails not installed. "
-        "Install with: pip install nemoguardrails"
-    )
+    logger.warning("NeMo Guardrails not installed. " "Install with: pip install nemoguardrails")
 
 
 class GuardrailsEngine:
@@ -41,9 +39,7 @@ class GuardrailsEngine:
                 Defaults to project's guardrails/ directory.
             model_id: Override Ollama model ID for the main model.
         """
-        self.config_path = config_path or str(
-            Path(config.project_root) / "guardrails"
-        )
+        self.config_path = config_path or str(Path(config.project_root) / "guardrails")
         self.model_id = model_id
 
         self._rails = None
@@ -60,8 +56,7 @@ class GuardrailsEngine:
         """Initialize NeMo Guardrails with bias-specific config."""
         if not NEMO_AVAILABLE:
             raise RuntimeError(
-                "NeMo Guardrails is required. "
-                "Install with: pip install nemoguardrails"
+                "NeMo Guardrails is required. " "Install with: pip install nemoguardrails"
             )
 
         rails_config = RailsConfig.from_path(self.config_path)
@@ -124,6 +119,7 @@ class GuardrailsEngine:
             if loop.is_running():
                 # If already in an async context, create a new loop
                 import concurrent.futures
+
                 with concurrent.futures.ThreadPoolExecutor() as pool:
                     result = pool.submit(
                         asyncio.run,
@@ -157,6 +153,7 @@ class StandaloneGuardrails:
     def model(self):
         if self._model is None:
             from src.models.model_loader import load_model
+
             self._model = load_model(**self._model_config)
         return self._model
 

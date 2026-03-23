@@ -9,7 +9,6 @@ Source: Nangia et al., EMNLP 2020
 Dataset: crows_pairs on HuggingFace
 """
 
-
 from datasets import load_dataset
 from loguru import logger
 from tqdm import tqdm
@@ -52,6 +51,7 @@ class CrowSPairsEvaluator:
 
         # Randomize order to avoid position bias
         import random
+
         if random.random() > 0.5:
             option_a, option_b = sent_more, sent_less
             stereo_is_a = True
@@ -121,9 +121,7 @@ class CrowSPairsEvaluator:
             stereo = sum(1 for r in bt_results if r["chose_stereotype"] is True)
             breakdown[bt] = {
                 "n": len(bt_results),
-                "stereotype_pct": round(
-                    stereo / max(len(bt_results), 1) * 100, 2
-                ),
+                "stereotype_pct": round(stereo / max(len(bt_results), 1) * 100, 2),
             }
         return breakdown
 

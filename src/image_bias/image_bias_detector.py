@@ -149,9 +149,9 @@ class ImageBiasDetector:
             "gender_distribution": dict(gender_counts),
             "male_pct": round(gender_counts.get("male", 0) / max(total, 1) * 100, 1),
             "female_pct": round(gender_counts.get("female", 0) / max(total, 1) * 100, 1),
-            "gender_gap": abs(
-                gender_counts.get("male", 0) - gender_counts.get("female", 0)
-            ) / max(total, 1) * 100,
+            "gender_gap": abs(gender_counts.get("male", 0) - gender_counts.get("female", 0))
+            / max(total, 1)
+            * 100,
         }
 
     def analyze_skin_tone(
@@ -190,9 +190,7 @@ class ImageBiasDetector:
             "prompt": prompt,
             "total_images": total,
             "tone_distribution": dict(tone_counts),
-            "diversity_score": round(
-                1.0 - max(tone_counts.values()) / max(total, 1), 3
-            ),
+            "diversity_score": round(1.0 - max(tone_counts.values()) / max(total, 1), 3),
         }
 
     def run_occupation_bias_audit(
@@ -221,12 +219,14 @@ class ImageBiasDetector:
             gender_analysis = self.analyze_gender_representation(images, prompt)
             tone_analysis = self.analyze_skin_tone(images, prompt)
 
-            results.append({
-                "occupation": occupation,
-                "prompt": prompt,
-                "gender": gender_analysis,
-                "skin_tone": tone_analysis,
-            })
+            results.append(
+                {
+                    "occupation": occupation,
+                    "prompt": prompt,
+                    "gender": gender_analysis,
+                    "skin_tone": tone_analysis,
+                }
+            )
 
         report = {
             "model": self.model_id,
@@ -250,15 +250,14 @@ class ImageBiasDetector:
         male_heavy = [r for r in results if r["gender"]["male_pct"] > 70]
         female_heavy = [r for r in results if r["gender"]["female_pct"] > 70]
         light_heavy = [
-            r for r in results
+            r
+            for r in results
             if r["skin_tone"]["tone_distribution"].get("light", 0)
             > r["skin_tone"]["total_images"] * 0.7
         ]
 
         avg_gender_gap = np.mean([r["gender"]["gender_gap"] for r in results])
-        avg_diversity = np.mean([
-            r["skin_tone"]["diversity_score"] for r in results
-        ])
+        avg_diversity = np.mean([r["skin_tone"]["diversity_score"] for r in results])
 
         return {
             "avg_gender_gap": round(float(avg_gender_gap), 1),
@@ -268,6 +267,7 @@ class ImageBiasDetector:
             "light_skin_dominated": [r["occupation"] for r in light_heavy],
             "most_biased_occupation": (
                 max(results, key=lambda r: r["gender"]["gender_gap"])["occupation"]
-                if results else None
+                if results
+                else None
             ),
         }

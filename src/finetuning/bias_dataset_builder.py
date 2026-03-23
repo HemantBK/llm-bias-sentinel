@@ -119,13 +119,15 @@ class BiasDatasetBuilder:
             )
             debiased_response = generate_response(self.model, debiased_prompt)
 
-            samples.append({
-                "instruction": DEBIASING_INSTRUCTION,
-                "input": prompt,
-                "output": debiased_response,
-                "category": prompt_data.get("target_bias", "general"),
-                "attack_type": prompt_data.get("category", "unknown"),
-            })
+            samples.append(
+                {
+                    "instruction": DEBIASING_INSTRUCTION,
+                    "input": prompt,
+                    "output": debiased_response,
+                    "category": prompt_data.get("target_bias", "general"),
+                    "attack_type": prompt_data.get("category", "unknown"),
+                }
+            )
 
             if (i + 1) % 50 == 0:
                 logger.info(f"Generated {i + 1}/{len(biased_prompts)} SFT samples")
@@ -172,12 +174,14 @@ class BiasDatasetBuilder:
             )
             debiased_response = generate_response(self.model, debiased_prompt)
 
-            pairs.append({
-                "prompt": prompt,
-                "chosen": debiased_response,
-                "rejected": biased_response,
-                "category": prompt_data.get("target_bias", "general"),
-            })
+            pairs.append(
+                {
+                    "prompt": prompt,
+                    "chosen": debiased_response,
+                    "rejected": biased_response,
+                    "category": prompt_data.get("target_bias", "general"),
+                }
+            )
 
             if (i + 1) % 50 == 0:
                 logger.info(f"Generated {i + 1}/{n_pairs} DPO pairs")
@@ -237,15 +241,17 @@ class BiasDatasetBuilder:
             )
             revision = generate_response(self.model, revision_prompt)
 
-            samples.append({
-                "prompt": prompt,
-                "initial_response": initial_response,
-                "principle_id": principle["id"],
-                "principle": principle["principle"],
-                "critique": critique,
-                "revision": revision,
-                "category": prompt_data.get("target_bias", "general"),
-            })
+            samples.append(
+                {
+                    "prompt": prompt,
+                    "initial_response": initial_response,
+                    "principle_id": principle["id"],
+                    "principle": principle["principle"],
+                    "critique": critique,
+                    "revision": revision,
+                    "category": prompt_data.get("target_bias", "general"),
+                }
+            )
 
             if (i + 1) % 25 == 0:
                 logger.info(f"Generated {i + 1}/{n_samples} Constitutional AI samples")
@@ -254,9 +260,7 @@ class BiasDatasetBuilder:
 
         Path(output_path).mkdir(parents=True, exist_ok=True)
         dataset.save_to_disk(output_path)
-        logger.info(
-            f"Constitutional AI dataset saved: {len(dataset)} samples -> {output_path}"
-        )
+        logger.info(f"Constitutional AI dataset saved: {len(dataset)} samples -> {output_path}")
 
         return dataset
 
@@ -293,13 +297,15 @@ class BiasDatasetBuilder:
                     )
                     debiased = generate_response(self.model, debiased_prompt)
 
-                    samples.append({
-                        "prompt": prompt,
-                        "chosen": debiased,
-                        "rejected": biased_output,
-                        "original_bias_score": result["bias_score"],
-                        "source_model": model_name,
-                    })
+                    samples.append(
+                        {
+                            "prompt": prompt,
+                            "chosen": debiased,
+                            "rejected": biased_output,
+                            "original_bias_score": result["bias_score"],
+                            "source_model": model_name,
+                        }
+                    )
 
         if samples:
             dataset = Dataset.from_list(samples)
@@ -323,28 +329,34 @@ class BiasDatasetBuilder:
         for attack in ALL_ATTACKS:
             prompts = instantiate_template(attack)
             for p in prompts:
-                all_prompts.append({
-                    "prompt": p,
-                    "target_bias": attack.target_bias,
-                    "category": attack.category,
-                    "severity": attack.severity,
-                })
+                all_prompts.append(
+                    {
+                        "prompt": p,
+                        "target_bias": attack.target_bias,
+                        "category": attack.category,
+                        "severity": attack.severity,
+                    }
+                )
 
         # Add simple demographic probes
         for category, groups in DEMOGRAPHIC_GROUPS.items():
             for group in groups:
-                all_prompts.append({
-                    "prompt": f"Describe the typical characteristics of {group}.",
-                    "target_bias": category,
-                    "category": "demographic_probe",
-                    "severity": "medium",
-                })
-                all_prompts.append({
-                    "prompt": f"What are {group} like in the workplace?",
-                    "target_bias": category,
-                    "category": "workplace_probe",
-                    "severity": "medium",
-                })
+                all_prompts.append(
+                    {
+                        "prompt": f"Describe the typical characteristics of {group}.",
+                        "target_bias": category,
+                        "category": "demographic_probe",
+                        "severity": "medium",
+                    }
+                )
+                all_prompts.append(
+                    {
+                        "prompt": f"What are {group} like in the workplace?",
+                        "target_bias": category,
+                        "category": "workplace_probe",
+                        "severity": "medium",
+                    }
+                )
 
         # Sample if we have more than needed
         if len(all_prompts) > n:

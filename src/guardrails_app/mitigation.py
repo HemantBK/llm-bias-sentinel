@@ -8,8 +8,6 @@ Implements multiple mitigation approaches:
 4. Calibration: Adjust generation parameters to reduce bias
 """
 
-
-
 from src.config import config
 from src.models.model_loader import generate_response, load_model
 
@@ -108,20 +106,30 @@ class CounterfactualAugmenter(MitigationStrategy):
 
     SWAP_PAIRS = {
         "gender": [
-            ("he", "she"), ("him", "her"), ("his", "her"),
-            ("man", "woman"), ("men", "women"),
-            ("boy", "girl"), ("boys", "girls"),
-            ("father", "mother"), ("husband", "wife"),
+            ("he", "she"),
+            ("him", "her"),
+            ("his", "her"),
+            ("man", "woman"),
+            ("men", "women"),
+            ("boy", "girl"),
+            ("boys", "girls"),
+            ("father", "mother"),
+            ("husband", "wife"),
             ("male", "female"),
         ],
         "race": [
-            ("White", "Black"), ("White", "Asian"),
-            ("White", "Latino"), ("White", "Arab"),
-            ("European", "African"), ("European", "Asian"),
+            ("White", "Black"),
+            ("White", "Asian"),
+            ("White", "Latino"),
+            ("White", "Arab"),
+            ("European", "African"),
+            ("European", "Asian"),
         ],
         "religion": [
-            ("Christian", "Muslim"), ("Christian", "Jewish"),
-            ("Christian", "Hindu"), ("Christian", "Buddhist"),
+            ("Christian", "Muslim"),
+            ("Christian", "Jewish"),
+            ("Christian", "Hindu"),
+            ("Christian", "Buddhist"),
         ],
     }
 
@@ -138,10 +146,11 @@ class CounterfactualAugmenter(MitigationStrategy):
 
         for term_a, term_b in swap_pairs:
             # Use word-boundary regex to avoid partial-word matches
-            pattern_a = re.compile(r'\b' + re.escape(term_a) + r'\b', re.IGNORECASE)
-            pattern_b = re.compile(r'\b' + re.escape(term_b) + r'\b', re.IGNORECASE)
+            pattern_a = re.compile(r"\b" + re.escape(term_a) + r"\b", re.IGNORECASE)
+            pattern_b = re.compile(r"\b" + re.escape(term_b) + r"\b", re.IGNORECASE)
 
             if pattern_a.search(prompt):
+
                 def _replace_preserving_case(match, replacement=term_b):
                     original = match.group(0)
                     if original.isupper():
@@ -153,14 +162,17 @@ class CounterfactualAugmenter(MitigationStrategy):
                 swapped = pattern_a.sub(_replace_preserving_case, prompt)
 
                 if swapped != prompt:
-                    counterfactuals.append({
-                        "original": prompt,
-                        "counterfactual": swapped,
-                        "swapped": f"{term_a} -> {term_b}",
-                        "category": swap_category,
-                    })
+                    counterfactuals.append(
+                        {
+                            "original": prompt,
+                            "counterfactual": swapped,
+                            "swapped": f"{term_a} -> {term_b}",
+                            "category": swap_category,
+                        }
+                    )
 
             elif pattern_b.search(prompt):
+
                 def _replace_preserving_case_b(match, replacement=term_a):
                     original = match.group(0)
                     if original.isupper():
@@ -172,12 +184,14 @@ class CounterfactualAugmenter(MitigationStrategy):
                 swapped = pattern_b.sub(_replace_preserving_case_b, prompt)
 
                 if swapped != prompt:
-                    counterfactuals.append({
-                        "original": prompt,
-                        "counterfactual": swapped,
-                        "swapped": f"{term_b} -> {term_a}",
-                        "category": swap_category,
-                    })
+                    counterfactuals.append(
+                        {
+                            "original": prompt,
+                            "counterfactual": swapped,
+                            "swapped": f"{term_b} -> {term_a}",
+                            "category": swap_category,
+                        }
+                    )
 
         return counterfactuals
 
@@ -215,9 +229,7 @@ class CalibrationMitigation(MitigationStrategy):
 
     def get_params(self, risk_level: str = "balanced") -> dict:
         """Get recommended model parameters for a risk level."""
-        return self.RECOMMENDED_PARAMS.get(
-            risk_level, self.RECOMMENDED_PARAMS["balanced"]
-        )
+        return self.RECOMMENDED_PARAMS.get(risk_level, self.RECOMMENDED_PARAMS["balanced"])
 
     def apply(self, prompt: str, response: str = "", **kwargs) -> str:
         """Not used directly — use get_params to configure the model."""

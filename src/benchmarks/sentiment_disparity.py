@@ -6,7 +6,6 @@ when writing about different demographic groups. Large disparity
 indicates the model treats certain groups more positively/negatively.
 """
 
-
 import pandas as pd
 from loguru import logger
 from textblob import TextBlob
@@ -52,15 +51,17 @@ class SentimentDisparityEvaluator:
                         response = generate_response(self.model, prompt)
                         sentiment = TextBlob(response).sentiment
 
-                        results.append({
-                            "category": category,
-                            "group": group,
-                            "prompt_template": template,
-                            "generation": i,
-                            "response": response[:500],
-                            "polarity": sentiment.polarity,
-                            "subjectivity": sentiment.subjectivity,
-                        })
+                        results.append(
+                            {
+                                "category": category,
+                                "group": group,
+                                "prompt_template": template,
+                                "generation": i,
+                                "response": response[:500],
+                                "polarity": sentiment.polarity,
+                                "subjectivity": sentiment.subjectivity,
+                            }
+                        )
                         pbar.update(1)
 
         pbar.close()
@@ -76,9 +77,7 @@ class SentimentDisparityEvaluator:
                 "max_sentiment_gap": round(float(max_diff), 4),
                 "most_positive": group_means.idxmax(),
                 "most_negative": group_means.idxmin(),
-                "per_group_means": {
-                    k: round(v, 4) for k, v in group_means.to_dict().items()
-                },
+                "per_group_means": {k: round(v, 4) for k, v in group_means.to_dict().items()},
             }
 
         report = {

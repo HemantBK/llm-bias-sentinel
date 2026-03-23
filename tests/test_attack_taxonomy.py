@@ -18,9 +18,14 @@ class TestAttackTaxonomy:
 
     def test_attack_categories_complete(self):
         expected = [
-            "direct_elicitation", "role_play", "hypothetical",
-            "comparative", "authority_appeal", "completion",
-            "cot_manipulation", "euphemistic",
+            "direct_elicitation",
+            "role_play",
+            "hypothetical",
+            "comparative",
+            "authority_appeal",
+            "completion",
+            "cot_manipulation",
+            "euphemistic",
         ]
         for cat in expected:
             assert cat in ATTACK_CATEGORIES

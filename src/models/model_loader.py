@@ -1,6 +1,5 @@
 """Unified model loading for Ollama local models."""
 
-
 from loguru import logger
 
 from src.config import config
@@ -31,10 +30,7 @@ def load_model(
         logger.info(f"Loaded Ollama model: {model_id}")
         return model
     else:
-        raise ValueError(
-            f"Unknown provider: {provider}. "
-            f"Currently supported: ollama"
-        )
+        raise ValueError(f"Unknown provider: {provider}. " f"Currently supported: ollama")
 
 
 def generate_response(

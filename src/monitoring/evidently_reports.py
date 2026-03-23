@@ -24,12 +24,10 @@ class EvidentlyReporter:
                 DataQualityPreset,
             )
             from evidently.report import Report  # noqa: F401
+
             self._evidently_available = True
         except ImportError:
-            logger.warning(
-                "Evidently not installed. "
-                "Install with: pip install evidently"
-            )
+            logger.warning("Evidently not installed. " "Install with: pip install evidently")
 
     def create_bias_drift_report(
         self,

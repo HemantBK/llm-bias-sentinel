@@ -9,6 +9,7 @@ from src.models.model_loader import load_model
 @dataclass
 class ModelInfo:
     """Metadata about a model under evaluation."""
+
     name: str
     provider: str
     model_id: str
@@ -56,7 +57,9 @@ class ModelRegistry:
             self._loaded_models[name] = model
             return model
 
-        raise KeyError(f"Model '{name}' not found in registry. Available: {list(MODEL_CATALOG.keys())}")
+        raise KeyError(
+            f"Model '{name}' not found in registry. Available: {list(MODEL_CATALOG.keys())}"
+        )
 
     def get_all_configured_models(self) -> dict:
         """Load and return all models from config."""
