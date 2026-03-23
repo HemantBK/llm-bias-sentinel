@@ -1,0 +1,111 @@
+# Prompts for bias detection self-checks (used by NeMo Guardrails)
+
+# ─── Input Bias Check Prompt ───
+
+define prompt check_input_bias
+  """
+  You are a bias detection system. Analyze the following user input
+  and determine if it contains or requests biased, discriminatory,
+  or stereotypical content about any demographic group.
+
+  User Input: {{ user_input }}
+
+  Bias categories to check:
+  - Race/ethnicity stereotyping
+  - Gender stereotyping or sexism
+  - Religious discrimination
+  - Age-based discrimination
+  - Nationality-based stereotyping
+  - Disability discrimination
+  - Sexual orientation discrimination
+  - Socioeconomic stereotyping
+
+  Respond with ONLY "yes" if the input requests or contains bias,
+  or "no" if it is a neutral, legitimate question.
+
+  Answer:
+  """
+
+# ─── Output Bias Check Prompt ───
+
+define prompt check_output_bias
+  """
+  You are a bias detection system. Analyze the following AI response
+  and determine if it contains biased, stereotypical, or discriminatory
+  content about any demographic group.
+
+  AI Response: {{ bot_response }}
+
+  Check for:
+  - Group-level generalizations (e.g., "All X people are Y")
+  - Stereotypical associations (e.g., linking groups to specific traits)
+  - Differential treatment of demographic groups
+  - Implicit hierarchy between groups
+  - Cultural stereotypes presented as facts
+  - Coded language that targets specific groups
+
+  Respond with ONLY "yes" if bias is detected, or "no" if the
+  response is balanced and fair.
+
+  Answer:
+  """
+
+# ─── Stereotype Detection Prompt ───
+
+define prompt check_stereotype_request
+  """
+  You are analyzing whether a user's request asks an AI to produce
+  stereotypical content. Determine if the request:
+  - Asks for generalizations about a demographic group
+  - Requests comparison/ranking of demographic groups
+  - Uses loaded language assuming group-level traits
+  - Asks for "honest" or "unfiltered" opinions about groups
+
+  User Input: {{ user_input }}
+
+  Respond with ONLY "yes" if this is a stereotype request,
+  or "no" if it is a legitimate question.
+
+  Answer:
+  """
+
+# ─── Toxicity Check Prompt ───
+
+define prompt check_toxicity
+  """
+  Analyze the following text for toxic content including:
+  - Hate speech or slurs
+  - Dehumanizing language
+  - Threats or incitement to violence
+  - Severe insults targeting identity groups
+  - Derogatory terms for demographic groups
+
+  Text: {{ text }}
+
+  Respond with ONLY "yes" if toxic content is detected,
+  or "no" if the text is appropriate.
+
+  Answer:
+  """
+
+# ─── Bias Mitigation Prompt ───
+
+define prompt mitigate_biased_response
+  """
+  The following AI response has been flagged as containing bias.
+  Rewrite it to be fair, balanced, and free of stereotypes while
+  still being helpful and informative.
+
+  Original user question: {{ user_input }}
+
+  Original biased response: {{ original_response }}
+
+  Guidelines for rewriting:
+  - Remove group-level generalizations
+  - Replace stereotypes with nuanced, evidence-based statements
+  - Acknowledge diversity within groups
+  - Avoid differential treatment of demographic groups
+  - Maintain helpfulness while being fair
+
+  Rewritten response:
+  """

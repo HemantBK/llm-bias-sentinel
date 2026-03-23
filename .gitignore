@@ -1,0 +1,101 @@
+# ========================================
+# Environment & Virtual Environments
+# ========================================
+.env
+.venv/
+venv/
+env/
+
+# ========================================
+# Python
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+*.pyo
+*.pyd
+
+# ========================================
+# IDE / Editor
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ========================================
+# OS Files
+# ========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# ========================================
+# Jupyter
+# ========================================
+.ipynb_checkpoints/
+
+# ========================================
+# Model Files (large binaries)
+# ========================================
+models_cache/
+*.bin
+*.safetensors
+*.gguf
+*.ggml
+*.pt
+*.pth
+
+# ========================================
+# Generated Images (large)
+# ========================================
+reports/image_bias_analysis/*.png
+reports/image_bias_analysis/*.jpg
+
+# ========================================
+# KEEP these result files (override above)
+# ========================================
+!reports/benchmark_results/all_results.json
+!reports/benchmark_results/sample_results.json
+!reports/model_comparison_matrix.csv
+!reports/red_team/red_team_report.html
+
+# ========================================
+# Docker Runtime Data
+# ========================================
+docker-compose.override.yml
+monitoring/grafana/data/
+monitoring/prometheus/data/
+
+# ========================================
+# Logs
+# ========================================
+*.log
+logs/
+
+# ========================================
+# Testing Cache
+# ========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ========================================
+# Colab Results ZIP (already extracted)
+# ========================================
+bias_sentinel_results/
+
+# ========================================
+# HuggingFace Cache
+# ========================================
+.cache/

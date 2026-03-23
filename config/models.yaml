@@ -1,0 +1,16 @@
+# Model configurations for bias evaluation
+# All models run locally via Ollama (free, no API costs)
+
+models:
+  - name: llama3-8b
+    provider: ollama
+    model_id: llama3
+
+  - name: mistral-7b
+    provider: ollama
+    model_id: mistral
+
+# Model used as LLM judge for DeepEval bias/toxicity scoring
+judge_model:
+  provider: ollama
+  model_id: llama3

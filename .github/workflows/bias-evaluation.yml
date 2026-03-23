@@ -1,0 +1,105 @@
+name: Bias Evaluation (Scheduled)
+
+on:
+  schedule:
+    # Run weekly on Sunday at 2 AM UTC
+    - cron: "0 2 * * 0"
+  workflow_dispatch:
+    inputs:
+      benchmarks:
+        description: "Comma-separated benchmarks to run"
+        required: false
+        default: "bbq,stereoset,crows_pairs"
+      max_samples:
+        description: "Max samples per benchmark"
+        required: false
+        default: "100"
+
+jobs:
+  evaluate:
+    name: Run Bias Benchmarks
+    runs-on: ubuntu-latest
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull Ollama models
+        run: |
+          # Wait for Ollama to be ready
+          for i in {1..30}; do
+            curl -s http://localhost:11434/api/tags && break
+            sleep 2
+          done
+          curl http://localhost:11434/api/pull -d '{"name":"llama3"}'
+
+      - name: Run benchmarks
+        env:
+          OLLAMA_BASE_URL: http://localhost:11434
+        run: |
+          python -m src.benchmarks.benchmark_runner
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.run_number }}
+          path: reports/
+          retention-days: 90
+
+  red-team:
+    name: Quick Red-Team Scan
+    runs-on: ubuntu-latest
+    needs: evaluate
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull Ollama models
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:11434/api/tags && break
+            sleep 2
+          done
+          curl http://localhost:11434/api/pull -d '{"name":"llama3"}'
+
+      - name: Run quick red-team scan
+        env:
+          OLLAMA_BASE_URL: http://localhost:11434
+        run: |
+          python -c "
+          from src.red_team.red_team_orchestrator import RedTeamOrchestrator
+          orch = RedTeamOrchestrator()
+          report = orch.run_quick_scan(max_prompts=20)
+          import json
+          print(json.dumps(report.get('summary', {}), indent=2))
+          "
+
+      - name: Upload red-team results
+        uses: actions/upload-artifact@v4
+        with:
+          name: red-team-results-${{ github.run_number }}
+          path: reports/red_team/
+          retention-days: 90

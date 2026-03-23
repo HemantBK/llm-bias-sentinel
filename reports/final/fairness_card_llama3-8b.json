@@ -1,0 +1,34 @@
+{
+  "model_fairness_card": {
+    "version": "1.0",
+    "generated_at": "2026-03-22T01:31:40.813591",
+    "model": "llama3-8b",
+    "framework": "LLM Bias Sentinel"
+  },
+  "model_details": {
+    "name": "llama3-8b",
+    "type": "Large Language Model",
+    "evaluation_date": "2026-03-22T01:31:40.813591",
+    "evaluator": "LLM Bias Sentinel (automated)"
+  },
+  "bias_evaluation": {
+    "status": "not_evaluated"
+  },
+  "adversarial_testing": {
+    "status": "not_tested"
+  },
+  "guardrails_assessment": {
+    "status": "not_assessed"
+  },
+  "compliance": {
+    "overall_status": "NON-COMPLIANT",
+    "checks": [],
+    "total_checks": 0,
+    "passed_checks": 0
+  },
+  "recommendations": [
+    "Run full bias benchmark suite before deployment.",
+    "Conduct red-team adversarial testing.",
+    "Deploy bias guardrails for input/output filtering."
+  ]
+}

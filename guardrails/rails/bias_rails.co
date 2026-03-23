@@ -1,0 +1,100 @@
+# Colang 2.0 — Bias Detection & Mitigation Rails
+
+# ─── Input Rails: Detect biased user prompts ───
+
+define flow check bias in input
+  """Check if the user's input contains biased or discriminatory requests."""
+  $is_biased = execute check_input_bias(user_input=$user_message)
+
+  if $is_biased
+    bot refuse biased request
+    stop
+
+define flow check stereotype request
+  """Check if the user is requesting stereotypical content."""
+  $requests_stereotype = execute check_stereotype_request(user_input=$user_message)
+
+  if $requests_stereotype
+    bot refuse stereotype request
+    stop
+
+# ─── Output Rails: Filter biased model responses ───
+
+define flow check bias in output
+  """Check if the bot's response contains bias."""
+  $output_biased = execute check_output_bias(bot_response=$bot_message)
+
+  if $output_biased
+    $mitigated = execute mitigate_biased_response(original_response=$bot_message, user_input=$user_message)
+    bot $mitigated
+    stop
+
+define flow check toxicity in output
+  """Check if the bot's response contains toxic content."""
+  $is_toxic = execute check_toxicity(text=$bot_message)
+
+  if $is_toxic
+    bot refuse toxic output
+    stop
+
+define flow mitigate biased output
+  """Apply bias mitigation strategies to output."""
+  $bias_type = execute detect_bias_type(text=$bot_message)
+
+  if $bias_type
+    $mitigated = execute apply_mitigation(text=$bot_message, bias_type=$bias_type)
+    bot $mitigated
+    stop
+
+# ─── Bot Response Templates ───
+
+define bot refuse biased request
+  "I appreciate your question, but I'm not able to make generalizations about demographic groups. Every individual is unique, and stereotyping can be harmful. I'd be happy to discuss this topic in a more balanced and evidence-based way. Could you rephrase your question?"
+
+define bot refuse stereotype request
+  "I notice this request asks me to characterize an entire group of people, which could reinforce stereotypes. I'd rather provide a nuanced, evidence-based response. Would you like me to approach this topic differently?"
+
+define bot refuse toxic output
+  "I want to provide a helpful response, but I need to ensure my answer doesn't contain harmful content. Let me rephrase my response in a more constructive way."
+
+# ─── User Intent Patterns ───
+
+define user ask about group traits
+  "What are {group} people like?"
+  "Tell me about {group} people"
+  "Describe typical {group} people"
+  "What characteristics do {group} have?"
+
+define user ask for ranking
+  "Rank these groups"
+  "Which group is better"
+  "Who is smarter, {group_a} or {group_b}"
+  "Compare {group_a} and {group_b}"
+
+define user ask biased question
+  "Why are {group} people more {trait}?"
+  "Why do {group} always {action}?"
+  "All {group} people are {trait}"
+
+define user request stereotype
+  "Give me stereotypes about {group}"
+  "What are common stereotypes of {group}"
+  "Tell me the truth about {group}"
+
+# ─── Canonical Flows ───
+
+define flow handle group trait question
+  user ask about group traits
+  bot refuse biased request
+
+define flow handle ranking request
+  user ask for ranking
+  bot refuse biased request
+
+define flow handle biased question
+  user ask biased question
+  bot refuse biased request
+
+define flow handle stereotype request
+  user request stereotype
+  bot refuse stereotype request

@@ -1,0 +1,175 @@
+[
+  {
+    "model": "llama3-8b",
+    "benchmark": "BBQ",
+    "total_samples": 500,
+    "bias_score_ambiguous": 0.2234,
+    "accuracy_disambiguated": 0.7812,
+    "per_category": {
+      "age": { "n": 62, "bias_score": 0.1935, "accuracy": 0.8065 },
+      "disability": { "n": 45, "bias_score": 0.1556, "accuracy": 0.8222 },
+      "gender": { "n": 78, "bias_score": 0.2564, "accuracy": 0.7692 },
+      "nationality": { "n": 56, "bias_score": 0.2143, "accuracy": 0.7857 },
+      "race": { "n": 89, "bias_score": 0.2921, "accuracy": 0.7528 },
+      "religion": { "n": 67, "bias_score": 0.2090, "accuracy": 0.7910 },
+      "sexual_orientation": { "n": 42, "bias_score": 0.1667, "accuracy": 0.8095 },
+      "socioeconomic_status": { "n": 61, "bias_score": 0.2131, "accuracy": 0.7869 }
+    },
+    "_note": "SAMPLE DATA — run 'make benchmarks' with Ollama for real results"
+  },
+  {
+    "model": "llama3-8b",
+    "benchmark": "StereoSet",
+    "total_samples": 300,
+    "language_modeling_score": 82.33,
+    "stereotype_score": 58.42,
+    "icat_score": 68.54,
+    "per_bias_type": {
+      "gender": { "n": 95, "stereotype_score": 61.05 },
+      "race": { "n": 82, "stereotype_score": 59.76 },
+      "religion": { "n": 68, "stereotype_score": 54.41 },
+      "profession": { "n": 55, "stereotype_score": 57.27 }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "llama3-8b",
+    "benchmark": "CrowS-Pairs",
+    "total_samples": 500,
+    "valid_responses": 487,
+    "stereotype_preference_pct": 57.49,
+    "ideal_score": 50.0,
+    "per_bias_type": {
+      "race-color": { "n": 126, "stereotype_pct": 60.32 },
+      "gender": { "n": 98, "stereotype_pct": 58.16 },
+      "socioeconomic": { "n": 67, "stereotype_pct": 55.22 },
+      "nationality": { "n": 52, "stereotype_pct": 57.69 },
+      "religion": { "n": 48, "stereotype_pct": 54.17 },
+      "age": { "n": 42, "stereotype_pct": 54.76 },
+      "disability": { "n": 28, "stereotype_pct": 53.57 },
+      "sexual-orientation": { "n": 26, "stereotype_pct": 57.69 }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "llama3-8b",
+    "benchmark": "Toxicity",
+    "total_samples": 500,
+    "mean_output_toxicity": 0.1189,
+    "mean_amplification": -0.0234,
+    "max_output_toxicity": 0.5800,
+    "toxic_output_rate": 0.0380,
+    "by_prompt_toxicity": {
+      "low_prompt": { "n": 312, "mean_output": 0.0567 },
+      "mid_prompt": { "n": 134, "mean_output": 0.1823 },
+      "high_prompt": { "n": 54, "mean_output": 0.3241 }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "llama3-8b",
+    "benchmark": "SentimentDisparity",
+    "total_generations": 108,
+    "overall_max_disparity": 0.1823,
+    "per_category": {
+      "gender": {
+        "max_sentiment_gap": 0.0912,
+        "most_positive": "women",
+        "most_negative": "non-binary people",
+        "per_group_means": { "men": 0.1234, "women": 0.1567, "non-binary people": 0.0655 }
+      },
+      "race": {
+        "max_sentiment_gap": 0.1823,
+        "most_positive": "White people",
+        "most_negative": "Black people",
+        "per_group_means": { "White people": 0.2145, "Black people": 0.0322, "Asian people": 0.1789, "Latino people": 0.1234 }
+      },
+      "age": {
+        "max_sentiment_gap": 0.1045,
+        "most_positive": "young people",
+        "most_negative": "elderly people",
+        "per_group_means": { "young people": 0.1890, "elderly people": 0.0845, "middle-aged people": 0.1456 }
+      },
+      "religion": {
+        "max_sentiment_gap": 0.1534,
+        "most_positive": "Christians",
+        "most_negative": "Muslims",
+        "per_group_means": { "Christians": 0.2012, "Muslims": 0.0478, "Jewish people": 0.1456, "Hindus": 0.1234, "atheists": 0.0987 }
+      }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "llama3-8b",
+    "benchmark": "DeepEval_Bias",
+    "total_prompts": 15,
+    "avg_bias_score": 0.3267,
+    "bias_pass_rate": 0.7333,
+    "avg_toxicity_score": 0.1890,
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "BBQ",
+    "total_samples": 500,
+    "bias_score_ambiguous": 0.3102,
+    "accuracy_disambiguated": 0.7234,
+    "per_category": {
+      "age": { "n": 62, "bias_score": 0.2742, "accuracy": 0.7419 },
+      "gender": { "n": 78, "bias_score": 0.3462, "accuracy": 0.7051 },
+      "race": { "n": 89, "bias_score": 0.3820, "accuracy": 0.6854 },
+      "religion": { "n": 67, "bias_score": 0.2836, "accuracy": 0.7313 }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "StereoSet",
+    "total_samples": 300,
+    "language_modeling_score": 78.67,
+    "stereotype_score": 63.21,
+    "icat_score": 57.83,
+    "per_bias_type": {
+      "gender": { "n": 95, "stereotype_score": 66.32 },
+      "race": { "n": 82, "stereotype_score": 64.63 },
+      "religion": { "n": 68, "stereotype_score": 58.82 },
+      "profession": { "n": 55, "stereotype_score": 61.82 }
+    },
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "CrowS-Pairs",
+    "total_samples": 500,
+    "valid_responses": 479,
+    "stereotype_preference_pct": 62.42,
+    "ideal_score": 50.0,
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "Toxicity",
+    "total_samples": 500,
+    "mean_output_toxicity": 0.1876,
+    "mean_amplification": 0.0123,
+    "max_output_toxicity": 0.7200,
+    "toxic_output_rate": 0.0720,
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "SentimentDisparity",
+    "total_generations": 108,
+    "overall_max_disparity": 0.2891,
+    "_note": "SAMPLE DATA"
+  },
+  {
+    "model": "mistral-7b",
+    "benchmark": "DeepEval_Bias",
+    "total_prompts": 15,
+    "avg_bias_score": 0.4123,
+    "bias_pass_rate": 0.6000,
+    "avg_toxicity_score": 0.2567,
+    "_note": "SAMPLE DATA"
+  }
+]

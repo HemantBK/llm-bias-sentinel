@@ -1,0 +1,208 @@
+{
+  "model_fairness_card": {
+    "version": "1.0",
+    "generated_at": "2026-03-23T09:50:12.935652",
+    "model": "llama3-8b",
+    "framework": "LLM Bias Sentinel"
+  },
+  "model_details": {
+    "name": "llama3-8b",
+    "type": "Large Language Model",
+    "evaluation_date": "2026-03-23T09:50:12.935652",
+    "evaluator": "LLM Bias Sentinel (automated)"
+  },
+  "bias_evaluation": {
+    "status": "evaluated",
+    "benchmarks_run": [],
+    "results": [
+      {
+        "model": "llama3-8b",
+        "benchmark": "BBQ",
+        "total_samples": 500,
+        "bias_score_ambiguous": 0.0,
+        "accuracy_disambiguated": 0.0,
+        "per_category": {
+          "Age": {
+            "n": 500,
+            "bias_score": 0.0,
+            "accuracy": 0.642
+          }
+        }
+      },
+      {
+        "model": "llama3-8b",
+        "benchmark": "StereoSet",
+        "total_samples": 300,
+        "language_modeling_score": 97.67,
+        "stereotype_score": 38.91,
+        "icat_score": 76.0,
+        "per_bias_type": {
+          "gender": {
+            "n": 40,
+            "stereotype_score": 30.77
+          },
+          "race": {
+            "n": 147,
+            "stereotype_score": 46.53
+          },
+          "religion": {
+            "n": 0,
+            "stereotype_score": 50.0
+          },
+          "profession": {
+            "n": 113,
+            "stereotype_score": 31.82
+          }
+        }
+      },
+      {
+        "model": "llama3-8b",
+        "benchmark": "CrowS-Pairs",
+        "total_samples": 500,
+        "valid_responses": 482,
+        "stereotype_preference_pct": 54.15,
+        "ideal_score": 50.0,
+        "per_bias_type": {
+          "disability": {
+            "n": 24,
+            "stereotype_pct": 66.67
+          },
+          "sexual-orientation": {
+            "n": 29,
+            "stereotype_pct": 62.07
+          },
+          "nationality": {
+            "n": 41,
+            "stereotype_pct": 56.1
+          },
+          "gender": {
+            "n": 96,
+            "stereotype_pct": 47.92
+          },
+          "age": {
+            "n": 34,
+            "stereotype_pct": 55.88
+          },
+          "socioeconomic": {
+            "n": 46,
+            "stereotype_pct": 56.52
+          },
+          "physical-appearance": {
+            "n": 23,
+            "stereotype_pct": 43.48
+          },
+          "religion": {
+            "n": 32,
+            "stereotype_pct": 59.38
+          },
+          "race-color": {
+            "n": 157,
+            "stereotype_pct": 53.5
+          }
+        }
+      },
+      {
+        "model": "mistral-7b",
+        "benchmark": "BBQ",
+        "total_samples": 500,
+        "bias_score_ambiguous": 0.0,
+        "accuracy_disambiguated": 0.0,
+        "per_category": {
+          "Age": {
+            "n": 500,
+            "bias_score": 0.0,
+            "accuracy": 0.588
+          }
+        }
+      },
+      {
+        "model": "mistral-7b",
+        "benchmark": "StereoSet",
+        "total_samples": 300,
+        "language_modeling_score": 89.0,
+        "stereotype_score": 53.18,
+        "icat_score": 83.33,
+        "per_bias_type": {
+          "gender": {
+            "n": 40,
+            "stereotype_score": 36.11
+          },
+          "race": {
+            "n": 147,
+            "stereotype_score": 64.12
+          },
+          "religion": {
+            "n": 0,
+            "stereotype_score": 50.0
+          },
+          "profession": {
+            "n": 113,
+            "stereotype_score": 45.0
+          }
+        }
+      },
+      {
+        "model": "mistral-7b",
+        "benchmark": "CrowS-Pairs",
+        "total_samples": 500,
+        "valid_responses": 489,
+        "stereotype_preference_pct": 57.87,
+        "ideal_score": 50.0,
+        "per_bias_type": {
+          "disability": {
+            "n": 25,
+            "stereotype_pct": 72.0
+          },
+          "sexual-orientation": {
+            "n": 29,
+            "stereotype_pct": 65.52
+          },
+          "nationality": {
+            "n": 41,
+            "stereotype_pct": 41.46
+          },
+          "gender": {
+            "n": 96,
+            "stereotype_pct": 54.17
+          },
+          "age": {
+            "n": 34,
+            "stereotype_pct": 61.76
+          },
+          "socioeconomic": {
+            "n": 47,
+            "stereotype_pct": 65.96
+          },
+          "physical-appearance": {
+            "n": 24,
+            "stereotype_pct": 50.0
+          },
+          "religion": {
+            "n": 31,
+            "stereotype_pct": 64.52
+          },
+          "race-color": {
+            "n": 162,
+            "stereotype_pct": 57.41
+          }
+        }
+      }
+    ]
+  },
+  "adversarial_testing": {
+    "status": "not_tested"
+  },
+  "guardrails_assessment": {
+    "status": "not_assessed"
+  },
+  "compliance": {
+    "overall_status": "NON-COMPLIANT",
+    "checks": [],
+    "total_checks": 0,
+    "passed_checks": 0
+  },
+  "recommendations": [
+    "Conduct red-team adversarial testing.",
+    "Deploy bias guardrails for input/output filtering."
+  ]
+}

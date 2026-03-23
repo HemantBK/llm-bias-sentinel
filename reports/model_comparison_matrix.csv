@@ -1,0 +1,7 @@
+model,benchmark,bbq_bias_score,bbq_accuracy,ss_stereotype_score,ss_icat,crows_stereotype_pct
+llama3-8b,BBQ,0.0,0.0,,,
+llama3-8b,StereoSet,,,38.91,76.0,
+llama3-8b,CrowS-Pairs,,,,,54.15
+mistral-7b,BBQ,0.0,0.0,,,
+mistral-7b,StereoSet,,,53.18,83.33,
+mistral-7b,CrowS-Pairs,,,,,57.87

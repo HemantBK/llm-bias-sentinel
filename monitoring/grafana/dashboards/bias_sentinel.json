@@ -1,0 +1,515 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "bias-sentinel-main",
+    "title": "LLM Bias Sentinel Dashboard",
+    "tags": ["bias", "llm", "fairness", "sentinel"],
+    "timezone": "browser",
+    "editable": true,
+    "style": "dark",
+    "schemaVersion": 38,
+    "templating": {
+      "list": [
+        {
+          "allValue": ".*",
+          "current": { "selected": true, "text": "All", "value": "$__all" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "definition": "label_values(llm_bias_score_sum, model)",
+          "includeAll": true,
+          "label": "Model",
+          "multi": true,
+          "name": "model",
+          "query": "label_values(llm_bias_score_sum, model)",
+          "refresh": 2,
+          "sort": 1,
+          "type": "query"
+        },
+        {
+          "allValue": ".*",
+          "current": { "selected": true, "text": "All", "value": "$__all" },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "definition": "label_values(llm_bias_score_sum, category)",
+          "includeAll": true,
+          "label": "Category",
+          "multi": true,
+          "name": "category",
+          "query": "label_values(llm_bias_score_sum, category)",
+          "refresh": 2,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+        "id": 100,
+        "title": "Overview — Key Metrics",
+        "type": "row"
+      },
+      {
+        "id": 1,
+        "title": "Mean Bias Score",
+        "description": "Average bias score across all evaluated prompts. Lower is better. Threshold: 0.5",
+        "type": "stat",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "#EAB839", "value": 0.3 },
+                { "color": "red", "value": 0.5 }
+              ]
+            },
+            "unit": "short",
+            "decimals": 3
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "reduceOptions": { "calcs": ["lastNotNull"] },
+          "textMode": "auto"
+        },
+        "targets": [
+          {
+            "expr": "avg(llm_bias_score_sum{model=~\"$model\"} / llm_bias_score_count{model=~\"$model\"})",
+            "legendFormat": "Mean Bias",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Mean Toxicity Score",
+        "description": "Average toxicity score. Lower is better. Threshold: 0.5",
+        "type": "stat",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "#EAB839", "value": 0.3 },
+                { "color": "red", "value": 0.5 }
+              ]
+            },
+            "unit": "short",
+            "decimals": 3
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "reduceOptions": { "calcs": ["lastNotNull"] },
+          "textMode": "auto"
+        },
+        "targets": [
+          {
+            "expr": "avg(llm_toxicity_score_sum{model=~\"$model\"} / llm_toxicity_score_count{model=~\"$model\"})",
+            "legendFormat": "Mean Toxicity",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Total Flagged Outputs",
+        "description": "Cumulative count of responses flagged as biased or toxic",
+        "type": "stat",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "orange", "value": 10 },
+                { "color": "red", "value": 50 }
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "reduceOptions": { "calcs": ["lastNotNull"] },
+          "textMode": "auto"
+        },
+        "targets": [
+          {
+            "expr": "sum(llm_flagged_outputs_total{model=~\"$model\"})",
+            "legendFormat": "Flagged",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Mitigations Applied",
+        "description": "Total bias mitigations (rewrites, disclaimers, suppressions) applied",
+        "type": "stat",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "blue", "value": null },
+                { "color": "purple", "value": 50 }
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "reduceOptions": { "calcs": ["lastNotNull"] },
+          "textMode": "auto"
+        },
+        "targets": [
+          {
+            "expr": "sum(llm_mitigations_applied_total{model=~\"$model\"})",
+            "legendFormat": "Mitigations",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+        "id": 101,
+        "title": "Bias Trends Over Time",
+        "type": "row"
+      },
+      {
+        "id": 5,
+        "title": "Bias Score by Model (Time Series)",
+        "description": "Track bias score trends per model over time. Watch for drift.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 7 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Bias Score",
+              "drawStyle": "line",
+              "fillOpacity": 15,
+              "lineWidth": 2,
+              "pointSize": 5,
+              "showPoints": "auto",
+              "spanNulls": true
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "llm_bias_score_sum{model=~\"$model\"} / llm_bias_score_count{model=~\"$model\"}",
+            "legendFormat": "{{model}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Toxicity Score Over Time",
+        "description": "Track toxicity trends. Spikes indicate potential model degradation.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 7 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Toxicity Score",
+              "drawStyle": "line",
+              "fillOpacity": 15,
+              "lineWidth": 2,
+              "pointSize": 5,
+              "showPoints": "auto",
+              "spanNulls": true
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "llm_toxicity_score_sum{model=~\"$model\"} / llm_toxicity_score_count{model=~\"$model\"}",
+            "legendFormat": "{{model}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+        "id": 102,
+        "title": "Bias by Demographic Category",
+        "type": "row"
+      },
+      {
+        "id": 7,
+        "title": "Bias Score by Category",
+        "description": "Compare bias levels across demographic categories (race, gender, age, religion, etc.)",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Bias Score",
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "lineWidth": 1,
+              "pointSize": 5
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["mean"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "avg by (category) (llm_bias_score_sum{model=~\"$model\", category=~\"$category\"} / llm_bias_score_count{model=~\"$model\", category=~\"$category\"})",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Sentiment Polarity by Group",
+        "description": "Track sentiment disparity. Large gaps between groups indicate bias.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Sentiment Polarity",
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "lineWidth": 2,
+              "showPoints": "auto",
+              "spanNulls": true
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "llm_sentiment_polarity{model=~\"$model\"}",
+            "legendFormat": "{{group}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+        "id": 103,
+        "title": "Guardrails & Mitigation",
+        "type": "row"
+      },
+      {
+        "id": 9,
+        "title": "Flagged Output Rate (per 5min)",
+        "description": "Rate of outputs flagged as biased. Sustained highs need investigation.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 25 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Flags / 5min",
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "lineWidth": 1,
+              "stacking": { "mode": "normal" }
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "rate(llm_flagged_outputs_total{model=~\"$model\"}[5m]) * 300",
+            "legendFormat": "{{model}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Mitigation Actions Rate (per 5min)",
+        "description": "Rate of bias mitigations applied. Shows guardrails activity.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 25 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Mitigations / 5min",
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "lineWidth": 1,
+              "stacking": { "mode": "normal" }
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "rate(llm_mitigations_applied_total{model=~\"$model\"}[5m]) * 300",
+            "legendFormat": "{{model}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 33 },
+        "id": 104,
+        "title": "API Performance",
+        "type": "row"
+      },
+      {
+        "id": 11,
+        "title": "Response Latency (p50 / p90 / p99)",
+        "description": "API response time percentiles. High p99 may indicate model overload.",
+        "type": "timeseries",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 34 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "axisLabel": "Latency (seconds)",
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "lineWidth": 2,
+              "showPoints": "auto"
+            },
+            "unit": "s"
+          }
+        },
+        "options": {
+          "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+          "tooltip": { "mode": "multi" }
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(llm_response_latency_seconds_bucket{model=~\"$model\"}[5m]))",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.90, rate(llm_response_latency_seconds_bucket{model=~\"$model\"}[5m]))",
+            "legendFormat": "p90",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(llm_response_latency_seconds_bucket{model=~\"$model\"}[5m]))",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Current Bias Level",
+        "description": "Gauge showing current bias level. Green = safe, Yellow = warning, Red = critical.",
+        "type": "gauge",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 34 },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "#EAB839", "value": 0.3 },
+                { "color": "orange", "value": 0.5 },
+                { "color": "red", "value": 0.7 }
+              ]
+            },
+            "min": 0,
+            "max": 1,
+            "unit": "short",
+            "decimals": 3
+          }
+        },
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": { "calcs": ["lastNotNull"] },
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "targets": [
+          {
+            "expr": "avg(llm_bias_score_sum{model=~\"$model\"} / llm_bias_score_count{model=~\"$model\"})",
+            "legendFormat": "Bias Score",
+            "refId": "A"
+          }
+        ]
+      }
+    ],
+    "time": { "from": "now-6h", "to": "now" },
+    "refresh": "30s"
+  }
+}

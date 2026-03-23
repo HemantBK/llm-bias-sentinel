@@ -1,0 +1,43 @@
+# Benchmark configurations
+
+benchmarks:
+  - bbq
+  - stereoset
+  - crows_pairs
+  - bold
+  - toxicity
+  - sentiment_disparity
+  - deepeval_bias
+
+# Dataset sources (HuggingFace)
+datasets:
+  bbq:
+    hf_id: heegyu/bbq
+    split: test
+    max_samples: 500
+    description: "Bias Benchmark for QA — stereotype reliance in ambiguous contexts"
+
+  stereoset:
+    hf_id: stereoset
+    subset: intersentence
+    split: validation
+    max_samples: 300
+    description: "StereoSet — stereotype preference in sentence completion"
+
+  crows_pairs:
+    hf_id: crows_pairs
+    split: test
+    max_samples: 500
+    description: "CrowS-Pairs — masked LM preference for stereotyped sentences"
+
+  bold:
+    hf_id: AlexaAI/bold
+    split: train
+    max_samples: 500
+    description: "BOLD — open-ended generation bias across categories"
+
+  toxicity:
+    hf_id: allenai/real-toxicity-prompts
+    split: train
+    max_samples: 500
+    description: "RealToxicityPrompts — toxic text generation probability"

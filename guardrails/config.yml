@@ -1,0 +1,45 @@
+# NeMo Guardrails Configuration for LLM Bias Sentinel
+# Uses local Ollama models — zero API costs
+
+models:
+  - type: main
+    engine: ollama
+    model: llama3
+    parameters:
+      base_url: ${OLLAMA_BASE_URL:-http://localhost:11434}
+      temperature: 0.0
+
+  # Self-check models (all local)
+  - type: self_check_input
+    engine: ollama
+    model: llama3
+    parameters:
+      base_url: ${OLLAMA_BASE_URL:-http://localhost:11434}
+      temperature: 0.0
+
+  - type: self_check_output
+    engine: ollama
+    model: llama3
+    parameters:
+      base_url: ${OLLAMA_BASE_URL:-http://localhost:11434}
+      temperature: 0.0
+
+rails:
+  input:
+    flows:
+      - self check input
+      - check bias in input
+      - check stereotype request
+
+  output:
+    flows:
+      - self check output
+      - check bias in output
+      - check toxicity in output
+      - mitigate biased output
+
+  config:
+    # Enable all bias-related rails
+    enable_input_rails: true
+    enable_output_rails: true
+    lowest_temperature: 0.0
